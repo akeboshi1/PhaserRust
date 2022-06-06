@@ -1,7 +1,7 @@
 {
   "name": "Rust-wasm",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "main.ts",
   "author": "guanxiaomin <327547931@qq.com>",
   "license": "MIT",
   "scripts": {
@@ -10,10 +10,13 @@
   },
   "devDependencies": {
     "@wasm-tool/wasm-pack-plugin": "1.0.1",
-    "text-encoding": "^0.7.0",
     "html-webpack-plugin": "^3.2.0",
+    "text-encoding": "^0.7.0",
     "webpack": "^4.29.4",
     "webpack-cli": "^3.1.1",
     "webpack-dev-server": "^3.1.0"
+  },
+  "dependencies": {
+    "phaser": "^3.55.2"
   }
 }
