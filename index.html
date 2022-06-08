@@ -1,10 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>hello-wasm example</title>
-  </head>
-  <body>
-    <script src="./main.js"></script>
-  </body>
+
+<head>
+  <meta charset="utf-8">
+  <title>hello-wasm example</title>
+</head>
+
+<body>
+  <script>
+    window.addEventListener('load', (event) => {
+      const option = {
+        gameWidth: document.documentElement.clientWidth,
+        gameHeight: document.documentElement.clientHeight,
+        parent: "game",
+        //locationhref: window.location.href
+      }
+      const app = rusttest.Launcher.start(option);
+      // app.registerReload(window.reload);
+      window.addEventListener("resize", (e) => {
+        // app.onResize(document.documentElement.clientWidth, document.documentElement.clientHeight);
+
+      });
+      document.addEventListener("visibilitychange", function () {
+       //  app.visibilitychange(document.visibilityState);
+      });
+    });
+  </script>
+</body>
+
 </html>

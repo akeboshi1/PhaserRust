@@ -1,0 +1,41 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "target": "es5",
+    "lib": [
+      "es2015",
+      "webworker",
+      "dom"
+    ],
+    "declaration": false,
+    "sourceMap": true,
+    "outDir": "dist/types",
+    "typeRoots": [
+      "node_modules/@types",
+    ],
+    "types": ["webpack-env"],
+    "baseUrl": ".",
+    "noImplicitUseStrict": true,
+    "alwaysStrict": false,                   /* Base directory to resolve non-absolute module names. */
+    "paths": {
+      "render": [
+        "src/render/index"
+      ],
+      "worker": [
+        "src/worker/index"
+      ],
+      "utils": [
+        "src/utils/index"
+      ],
+      "structure": [
+        "src/structure/index"
+      ]
+    }
+  },
+  "exclude": [
+    "node_modules",
+  ]
+}
