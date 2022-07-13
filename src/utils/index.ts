@@ -1,0 +1,1 @@
+export * from "./ilauncher.config";
