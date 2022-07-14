@@ -1,9 +1,0 @@
-(this.webpackJsonp_name_=this.webpackJsonp_name_||[]).push([[0],{"./lib/index_bg.js":
-/*!*************************!*\
-  !*** ./lib/index_bg.js ***!
-  \*************************/
-/*! exports provided: wasm_add */function(module,__webpack_exports__,__webpack_require__){"use strict";eval('__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "wasm_add", function() { return wasm_add; });\n/* harmony import */ var _index_bg_wasm__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./index_bg.wasm */ "./lib/index_bg.wasm");\n\n\nfunction _assertNum(n) {\n    if (typeof(n) !== \'number\') throw new Error(\'expected a number argument\');\n}\n/**\n* @param {number} a\n* @param {number} b\n* @returns {number}\n*/\nfunction wasm_add(a, b) {\n    _assertNum(a);\n    _assertNum(b);\n    var ret = _index_bg_wasm__WEBPACK_IMPORTED_MODULE_0__["wasm_add"](a, b);\n    return ret;\n}\n\n\n\n//# sourceURL=webpack://%5Bname%5D/./lib/index_bg.js?')},"./lib/index_bg.wasm":
-/*!***************************!*\
-  !*** ./lib/index_bg.wasm ***!
-  \***************************/
-/*! exports provided: memory, wasm_add */function(module,exports,__webpack_require__){eval('"use strict";\n// Instantiate WebAssembly module\nvar wasmExports = __webpack_require__.w[module.i];\n__webpack_require__.r(exports);\n// export exports from WebAssembly module\nfor(var name in wasmExports) if(name != "__webpack_init__") exports[name] = wasmExports[name];\n// exec imports from WebAssembly module (for esm order)\n\n\n// exec wasm module\nwasmExports["__webpack_init__"]()\n\n//# sourceURL=webpack://%5Bname%5D/./lib/index_bg.wasm?')}}]);

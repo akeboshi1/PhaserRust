@@ -4,9 +4,9 @@
     "experimentalDecorators": true,
     "module": "esnext",
     "moduleResolution": "node",
-    "target": "es5",
+    "target": "ES6",
     "lib": [
-      "es2015",
+      "ES2016",
       "webworker",
       "dom"
     ],
