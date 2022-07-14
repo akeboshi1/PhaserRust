@@ -6,14 +6,6 @@ const TerserPlugin = require("terser-webpack-plugin");
 const commonConfig = {
     resolve: {
         extensions: [".ts", ".js", ".wasm"],
-        alias: {
-            // dragonBones: dragonBonesPath,
-            rust: path.join(__dirname, "./lib/Rust_wasm.js"),
-            worker: path.join(__dirname, "./src/worker"),
-            render: path.join(__dirname, "./src/render"),
-            utils: path.join(__dirname, "./src/utils"),
-            structure: path.join(__dirname, "./src/structure")
-        },
     },
     optimization: {
         minimize: true,
@@ -59,7 +51,7 @@ const workerConfig = Object.assign({}, commonConfig, {
         ],
     },
     entry: {
-        worker: path.join(__dirname, "./src/worker/index.ts"),
+        worker: path.join(__dirname, "./src/js/worker.js"),
     },
     output: {
         // This is required so workers are known where to be loaded from
@@ -71,10 +63,9 @@ const workerConfig = Object.assign({}, commonConfig, {
         library: "[name]",
     },
 })
-
 const renderConfig = Object.assign({}, commonConfig, {
     entry: {
-        rusttest: path.join(__dirname, "./launcher.ts"),
+        scripts: path.join(__dirname, "./src/scripts.js"),
     },
     module: {
         rules: [
@@ -94,7 +85,7 @@ const renderConfig = Object.assign({}, commonConfig, {
             inject: "head",
             title: "Rust example",
             template: path.join(__dirname, "./index.html"),
-            chunks: ["rusttest"]
+            chunks: ["scripts"]
         }),
         new WasmPackPlugin({
             crateDirectory: path.resolve(__dirname, "./lib")

@@ -19,21 +19,7 @@
     "types": ["webpack-env"],
     "baseUrl": ".",
     "noImplicitUseStrict": true,
-    "alwaysStrict": false,                   /* Base directory to resolve non-absolute module names. */
-    "paths": {
-      "render": [
-        "src/render/index"
-      ],
-      "worker": [
-        "src/worker/index"
-      ],
-      "utils": [
-        "src/utils/index"
-      ],
-      "structure": [
-        "src/structure/index"
-      ]
-    }
+    "alwaysStrict": false                  /* Base directory to resolve non-absolute module names. */
   },
   "exclude": [
     "node_modules",
