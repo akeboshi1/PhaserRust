@@ -18,9 +18,11 @@ export class Render extends RPCPeer {
 
     protected initWorker() {
         // Logger.log("startLink mainpeer", this.mMainPeerParam.key, this.mMainPeerParam.url);
-        const key = WORKER_PEER;
+        const key = new URL(WORKER_PEER, import.meta.url);
         const peerName = WORKER_NAME;
         const url = WORKER_URL;
+
+        // @ts-ignore
         this.attach(key, url, true).onceReady(() => {
             // this.mainPeer = this.remote[key][peerName];
             if (!this.mainWorker) {
