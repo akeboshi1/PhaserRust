@@ -4,6 +4,7 @@ const webpack = require('webpack');
 const WasmPackPlugin = require("@wasm-tool/wasm-pack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 const commonConfig = {
+    target: ['web', 'es5'],
     resolve: {
         extensions: [".ts", ".js", ".wasm"],
         alias: {
@@ -14,6 +15,9 @@ const commonConfig = {
             utils: path.join(__dirname, "./src/utils"),
             structure: path.join(__dirname, "./src/structure")
         },
+    },
+    experiments: {
+        syncWebAssembly: true,
     },
     optimization: {
         minimize: true,
@@ -69,7 +73,7 @@ const workerConfig = Object.assign({}, commonConfig, {
         libraryTarget: "umd",
         globalObject: "this",
         library: "[name]",
-    },
+    }
 })
 
 const renderConfig = Object.assign({}, commonConfig, {
@@ -97,7 +101,10 @@ const renderConfig = Object.assign({}, commonConfig, {
             chunks: ["rusttest"]
         }),
         new WasmPackPlugin({
-            crateDirectory: path.resolve(__dirname, "./lib")
+            crateDirectory: path.resolve(__dirname, "."),
+            withTypeScript: true,
+            outDir: path.resolve(__dirname,'pkg'),
+            outName:"wasm"
         }),
         // Have this example work in Edge which doesn't ship `TextEncoder` or
         // `TextDecoder` at this time.

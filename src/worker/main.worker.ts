@@ -10,7 +10,7 @@ export class MainWorker extends RPCPeer {
     @Export()
     createGame(config: ILauncherConfig) {
         this.launcher_config = config;
-        const js = import("../../lib/Rust_wasm.js");
+        const js = import("../../pkg/wasm");
         js.then(js => {
             js.greet("WebAssembly");
         });
