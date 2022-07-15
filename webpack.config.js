@@ -7,6 +7,9 @@ const commonConfig = {
     resolve: {
         extensions: [".ts", ".js", ".wasm"],
     },
+    experiments: {
+        syncWebAssembly: true,
+    },
     optimization: {
         minimize: true,
         concatenateModules: false,
@@ -88,7 +91,10 @@ const renderConfig = Object.assign({}, commonConfig, {
             chunks: ["scripts"]
         }),
         new WasmPackPlugin({
-            crateDirectory: path.resolve(__dirname, "./lib")
+            crateDirectory: path.resolve(__dirname, "."),
+            withTypeScript: true,
+            outDir: path.resolve(__dirname,'pkg'),
+            outName:"wasm"
         }),
         // Have this example work in Edge which doesn't ship `TextEncoder` or
         // `TextDecoder` at this time.
