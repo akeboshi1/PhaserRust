@@ -1,5 +1,4 @@
 if (window.Worker) {
-    //加载worker，注意第二个参数要有，否则无法导入 module
     const myWorker = new Worker(new URL('./js/worker.js', import.meta.url));
     setTimeout(() => {
         myWorker.postMessage(["wasm"]);
