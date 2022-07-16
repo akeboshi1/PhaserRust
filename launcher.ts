@@ -24,6 +24,7 @@ export class Launcher {
             // tslint:disable-next-line:no-console
             console.log("import game error", error);
         });
+
     }
     public registerComplete(func: Function) {
         this.mCompleteFunc = func;
