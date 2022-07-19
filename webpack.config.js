@@ -9,10 +9,6 @@ const commonConfig = {
         alias: {
             // dragonBones: dragonBonesPath,
             rust: path.join(__dirname, "./lib/Rust_wasm.js"),
-            worker: path.join(__dirname, "./src/worker"),
-            render: path.join(__dirname, "./src/render"),
-            utils: path.join(__dirname, "./src/utils"),
-            structure: path.join(__dirname, "./src/structure")
         },
     },
     optimization: {
@@ -59,7 +55,7 @@ const workerConfig = Object.assign({}, commonConfig, {
         ],
     },
     entry: {
-        worker: path.join(__dirname, "./src/worker/index.ts"),
+        worker: path.join(__dirname, "./src/js/worker.ts"),
     },
     output: {
         // This is required so workers are known where to be loaded from
@@ -74,7 +70,7 @@ const workerConfig = Object.assign({}, commonConfig, {
 
 const renderConfig = Object.assign({}, commonConfig, {
     entry: {
-        rusttest: path.join(__dirname, "./launcher.ts"),
+        rusttest: path.join(__dirname, "./src/main.ts"),
     },
     module: {
         rules: [

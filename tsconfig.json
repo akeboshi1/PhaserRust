@@ -21,12 +21,6 @@
     "noImplicitUseStrict": true,
     "alwaysStrict": false,                   /* Base directory to resolve non-absolute module names. */
     "paths": {
-      "render": [
-        "src/render/index"
-      ],
-      "worker": [
-        "src/worker/index"
-      ],
       "utils": [
         "src/utils/index"
       ],
