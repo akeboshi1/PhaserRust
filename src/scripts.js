@@ -1,5 +1,6 @@
 import "phaser";
-import { TestScene } from "./render/test.scene";
+import { SceneManager, SceneName } from "./render/scene/scene.manager";
+import { TestScene } from "./render/scene/test.scene";
 if (window.Worker) {
     const myWorker = new Worker(new URL('./js/worker.js', import.meta.url));
     // setTimeout(() => {
@@ -36,6 +37,6 @@ if (window.Worker) {
     // @ts-ignore
     var game = new Phaser.Game(config);
 
-    // 切换不同的scene
-    game.scene.add("testScene", TestScene, true, { x: 0, y: 0, worker: myWorker });
+    SceneManager.init(game, myWorker);
+    SceneManager.add(SceneName.TestScene);
 }
