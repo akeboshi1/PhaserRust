@@ -1,6 +1,6 @@
 import "phaser";
-import { SceneManager, SceneName } from "./render/scene/scene.manager";
-import { TestScene } from "./render/scene/test.scene";
+import {SceneEnum, SceneManager} from "./render/scene/scene.manager";
+
 if (window.Worker) {
     const myWorker = new Worker(new URL('./js/worker.js', import.meta.url));
     // setTimeout(() => {
@@ -12,9 +12,9 @@ if (window.Worker) {
     //     console.log('data from wasm: ' + data); //拿到 wasm 计算的结果
     // }
 
-    var config = {
+    const config = {
         type: Phaser.AUTO,
-        parent: "phaser-example",
+        parent: "phaser-rust-example",
         scale: {
             mode: Phaser.Scale.NONE,
             width: 800,
@@ -35,8 +35,9 @@ if (window.Worker) {
         //pipeline: { "Color": ColorShaderPipeline }
     };
     // @ts-ignore
-    var game = new Phaser.Game(config);
+    const game = new Phaser.Game(config);
 
     SceneManager.init(game, myWorker);
-    SceneManager.add(SceneName.TestScene);
+    console.dir(SceneEnum);
+    SceneManager.add(SceneEnum.TestScene);
 }
