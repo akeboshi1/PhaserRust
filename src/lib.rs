@@ -6,10 +6,31 @@ use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
 extern {
-    pub fn alert(s: &str);
+    #[wasm_bindgen(js_namespace = console)]
+    fn log(s: &str);
+}
+macro_rules! console_log {
+    ($($t:tt)*) => (log(&format_args!($($t)*).to_string()))
+}
+
+
+#[wasm_bindgen]
+pub fn action(input: &str) -> String {
+    let output = if input == "" {
+        "".to_string()
+    } else {
+        format!("Hello, {}!", input)
+    };
+
+    console_log!("Wasm in Worker says: {}",&output);
+
+    output
 }
 
 #[wasm_bindgen]
-pub fn greet(name: &str) {
-    alert(&format!("Hello, {}!", name));
+pub fn wasm_add(num1:i32,num2:i32)-> i32 {
+
+    let output = num1+num2;
+
+    output
 }
