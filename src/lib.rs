@@ -56,7 +56,7 @@ pub async fn addThreadTest(){
    let h1 = thread::spawn(|| async{
      foo().await
    });
-   h1.join().as_mut();
+   h1.join().unwrap();
 }
 
 
