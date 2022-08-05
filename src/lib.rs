@@ -1,7 +1,9 @@
 #![allow(non_snake_case)]
 #[warn(unused_imports)]
+#[warn(unused_must_use)]
 extern crate wasm_bindgen;
 use wasm_bindgen::prelude::*;
+use std::thread;
 
 #[wasm_bindgen]
 extern {
@@ -47,3 +49,14 @@ pub async fn test() -> u8 {
    let x = foo().await;
    x
 }
+
+
+#[wasm_bindgen]
+pub async fn addThreadTest(){
+   let h1 = thread::spawn(|| async{
+     foo().await
+   });
+   h1.join().as_mut();
+}
+
+
