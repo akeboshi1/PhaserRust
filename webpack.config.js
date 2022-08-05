@@ -4,8 +4,12 @@ const webpack = require('webpack');
 const WasmPackPlugin = require("@wasm-tool/wasm-pack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 const commonConfig = {
+    target: ['web', 'es5'],
     resolve: {
         extensions: [".ts", ".js", ".wasm"],
+    },
+    experiments: {
+        syncWebAssembly: true,
     },
     experiments: {
         syncWebAssembly: true,
@@ -64,7 +68,7 @@ const workerConfig = Object.assign({}, commonConfig, {
         libraryTarget: "umd",
         globalObject: "this",
         library: "[name]",
-    },
+    }
 })
 const renderConfig = Object.assign({}, commonConfig, {
     entry: {
