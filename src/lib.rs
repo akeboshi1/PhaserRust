@@ -2,7 +2,9 @@
 #[warn(unused_imports)]
 #[warn(unused_must_use)]
 extern crate wasm_bindgen;
+
 use wasm_bindgen::prelude::*;
+use js_sys::*;
 #[wasm_bindgen]
 extern {
     #[wasm_bindgen(js_namespace = console)]
@@ -59,7 +61,7 @@ pub async fn addThreadTest(){
 
 use std::io::{self, BufRead};
 use std::fs::File;
-use std::thread;
+use std::{thread, string};
 #[wasm_bindgen]
 pub fn sum_file_sync(file_path: &str) -> std::result::Result<f64,JsError> {
     let f = File::open(file_path)?;
@@ -73,5 +75,27 @@ pub fn sum_file_sync(file_path: &str) -> std::result::Result<f64,JsError> {
     }
     Ok(sum)
 }
+
+#[wasm_bindgen]
+pub fn run() -> u32{
+    let now = js_sys::Date::now();
+    let now_date = js_sys::Date::new(&JsValue::from_f64(now));
+    let x = now_date.get_milliseconds();
+    x
+    // let val = document.createElement("p");
+
+    // val.set_inner_html(&format!(
+    //     "Hello from Rust, it's {}:{}",
+    //     now_date.get_hours(),
+    //     now_date.get_minutes()
+    // ));
+    // document.body().append_child(val);
+}
+// #[wasm_bindgen]
+// async fn get_from_js() -> Result<JsValue, JsValue> {
+//     let promise = js_sys::Promise::resolve(&42.into());
+//     let result = wasm_bindgen_futures::JsFuture::from(promise).await?;
+//     Ok(result)
+// }
 
 
