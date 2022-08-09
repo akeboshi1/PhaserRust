@@ -5,6 +5,9 @@ onmessage = function (m) {
         module.test().then((data) => {
             postMessage(data);
         });
+        module.my_async_test().then((a)=>{
+            console.log("my_async_test complete:"+a);
+        })
         module.get_from_js().then((a) => {
             console.log(a);
         });
