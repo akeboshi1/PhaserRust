@@ -181,15 +181,26 @@ pub fn start_websocket() -> Result<(), JsValue> {
     Ok(())
 }
 
+// ================= 通过字节数组加载图片
 #[wasm_bindgen]
-pub async fn loadImage(bytes: Uint8Array) -> Result<JsValue, JsValue>{
+pub async fn loadImageByUint8Array(bytes: Uint8Array) -> Result<JsValue, JsValue>{
     let bytes: &Vec<u8> = &bytes.to_vec();
-    let b = rs::image::rotate(bytes,90);
+    let b = rs::image::invert(bytes);
     let _b =Uint8Array::from(&b[..]).buffer(); 
     let promise = js_sys::Promise::resolve(&_b.into());
     let result = wasm_bindgen_futures::JsFuture::from(promise).await?;
     Ok(result)
 }
+
+// ================= rust内部调用通过u8数组加载图片
+pub async fn loadImageByU8(bytes: &[u8]) -> Result<JsValue, JsValue>{
+    let b = rs::image::invert(bytes);
+    let _b =Uint8Array::from(&b[..]).buffer(); 
+    let promise = js_sys::Promise::resolve(&_b.into());
+    let result = wasm_bindgen_futures::JsFuture::from(promise).await?;
+    Ok(result)
+}
+
 
 
 
