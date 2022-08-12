@@ -20,9 +20,10 @@ rand = "0.7.0"
 cfg-if = "0.1.2"
 image = { version = "0.21.0", default-features = false, features = ["jpeg"] }
 console_error_panic_hook = "0.1.6"
+futures = { version = "0.3"}
 
 [dependencies.web-sys]
-version = "0.3.22"
+version = "^0.3.59"
 features = [
   "BinaryType",
   "Blob",
@@ -31,5 +32,13 @@ features = [
   "MessageEvent",
   "ProgressEvent",
   "WebSocket",
-  "console"
+  "console",
+  "XmlHttpRequest",
+  "XmlHttpRequestResponseType",
+  "XmlHttpRequestEventTarget",
+  "EventListener",
+  "AudioContext",
+  'AudioDestinationNode',
+  'AudioNode',
+  'AudioParam',
 ]
