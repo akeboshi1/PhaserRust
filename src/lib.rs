@@ -57,7 +57,7 @@ pub async fn addThreadTest(){
 
 use std::io::{self, BufRead};
 use std::fs::File;
-use std::{thread, string};
+use std::{thread};
 #[wasm_bindgen]
 pub fn sum_file_sync(file_path: &str) -> std::result::Result<f64,JsError> {
     let f = File::open(file_path)?;
@@ -185,7 +185,7 @@ pub fn start_websocket() -> Result<(), JsValue> {
 #[wasm_bindgen]
 pub async fn loadImageByUint8Array(bytes: Uint8Array) -> Result<JsValue, JsValue>{
     let bytes: &Vec<u8> = &bytes.to_vec();
-    let b = rs::image::load(bytes,0);
+    let b = rs::image::image::load(bytes,0);
     let _b =Uint8Array::from(&b[..]).buffer(); 
     let promise = js_sys::Promise::resolve(&_b.into());
     let result = wasm_bindgen_futures::JsFuture::from(promise).await?;
@@ -194,14 +194,21 @@ pub async fn loadImageByUint8Array(bytes: Uint8Array) -> Result<JsValue, JsValue
 
 // ================= rust内部调用通过u8数组加载图片
 pub async fn loadImageByU8(bytes: &[u8]) -> Result<JsValue, JsValue>{
-    let b = rs::image::load(bytes,0);
+    let b = rs::image::image::load(bytes,0);
     let _b =Uint8Array::from(&b[..]).buffer(); 
     let promise = js_sys::Promise::resolve(&_b.into());
     let result = wasm_bindgen_futures::JsFuture::from(promise).await?;
     Ok(result)
 }
 
-
+// ================ httprequest
+// #[wasm_bindgen]
+// pub async fn rustload(tmpStr:&str)->Result<JsValue,JsError> {
+//     let ctx = rs::xmlHttpRequest::xmlHttpRequest_render::httpLoad(&tmpStr);
+//     let promise = js_sys::Promise::resolve(&ctx.into());
+//     let result = wasm_bindgen_futures::JsFuture::from(promise).await?;
+//     Ok(result)
+// }
 
 
 
