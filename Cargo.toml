@@ -34,6 +34,7 @@ features = [
   "WebSocket",
   "console",
   "XmlHttpRequest",
+  "XmlHttpRequestUpload",
   "XmlHttpRequestResponseType",
   "XmlHttpRequestEventTarget",
   "EventListener",
@@ -41,4 +42,6 @@ features = [
   'AudioDestinationNode',
   'AudioNode',
   'AudioParam',
+  "FormData",
+  "BlobPropertyBag"
 ]

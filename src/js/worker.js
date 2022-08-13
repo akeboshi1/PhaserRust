@@ -5,11 +5,15 @@ onmessage = function (m) {
         module.test().then((data) => {
             postMessage(data);
         });
-        module.my_async_test().then((a)=>{
-            console.log("my_async_test complete:"+a);
+        module.my_async_test().then((a) => {
+            console.log("my_async_test complete:" + a);
         })
         module.get_from_js().then((a) => {
             console.log(a);
+        });
+        //https://user-images.githubusercontent.com/18412751/144263975-3b6b42e4-be34-4341-943c-5e851b99e233.png
+        module.loadTest("http://localhost:8080/assets/test.png").then((request) => {
+            console.log("load complete",request);
         });
         const num = module.wasm_add(10, 5);
         run(num);

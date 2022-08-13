@@ -11,7 +11,7 @@ pub async fn httpLoadAudioContext(path: &str) -> Result<web_sys::AudioContext, w
     }) as Box<dyn FnMut(_)>);*/
     request.onload();
     // &XmlHttpRequestEventTarget::onload(request.onload());
-    request.open("GET", path);
+    request.open("GET", path,true);
     let results = request.send();
     match results {
         Err(e) => println!("nothing {:?}", e),

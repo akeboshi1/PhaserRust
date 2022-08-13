@@ -6,7 +6,6 @@ extern crate wasm_bindgen;
 
 use js_sys::Uint8Array;
 use wasm_bindgen::prelude::*;
-
 mod rs;
 
 #[wasm_bindgen]
@@ -101,7 +100,7 @@ pub async fn my_async_test() -> Result<JsValue, JsValue> {
 
 // ====================== websocket
 use wasm_bindgen::JsCast;
-use web_sys::{ErrorEvent, MessageEvent, WebSocket};
+use web_sys::{ErrorEvent, MessageEvent, WebSocket, XmlHttpRequest};
 
 
 // macro_rules! log {
@@ -201,14 +200,17 @@ pub async fn loadImageByU8(bytes: &[u8]) -> Result<JsValue, JsValue>{
     Ok(result)
 }
 
-// ================ httprequest
-// #[wasm_bindgen]
-// pub async fn rustload(tmpStr:&str)->Result<JsValue,JsError> {
-//     let ctx = rs::xmlHttpRequest::xmlHttpRequest_render::httpLoad(&tmpStr);
-//     let promise = js_sys::Promise::resolve(&ctx.into());
-//     let result = wasm_bindgen_futures::JsFuture::from(promise).await?;
-//     Ok(result)
-// }
+// ================ httprequest by url
+#[wasm_bindgen]
+pub async fn loadTest(url: String)->Result<XmlHttpRequest,JsValue> {
+    let mut request = rs::xmlHttpRequest::xmlHttpPostRequest::PostRequest::new_from_default();
+    request.set_header(
+        "Authorization".to_string(),
+        "Bearer".to_string(),
+    );
+    let val = rs::xmlHttpRequest::xmlHttpPostRequest::PostRequest::send(request, &url)?;
+    Ok(val.request)
+}
 
 
 
