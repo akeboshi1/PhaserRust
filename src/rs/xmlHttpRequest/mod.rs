@@ -1,1 +1,1 @@
-pub mod xmlHttpRequest;
+pub mod xmlHttpPostRequest;

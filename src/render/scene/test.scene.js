@@ -7,10 +7,16 @@ export class TestScene extends Phaser.Scene {
         this.worker = data.worker;
     }
 
+    preload(){
+        this.load.image("test","assets/test.png");
+    }
+
     create() {
         const grap = this.add.graphics(undefined);
         grap.fillStyle(0xffcc00, 1);
         grap.fillCircle(100, 100, 15);
+
+        this.add.image(450,350,"test");
 
         setTimeout(() => {
             this.worker.postMessage(["wasm"]);

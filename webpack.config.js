@@ -1,5 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 const webpack = require('webpack');
 const WasmPackPlugin = require("@wasm-tool/wasm-pack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
@@ -100,6 +101,11 @@ const renderConfig = Object.assign({}, commonConfig, {
             outDir: path.resolve(__dirname,'pkg'),
             outName:"wasm"
         }),
+        new CopyWebpackPlugin({
+            patterns: [
+              { from: "assets", to: "assets", toType: "dir" }
+            ]
+          }),
         // Have this example work in Edge which doesn't ship `TextEncoder` or
         // `TextDecoder` at this time.
         new webpack.ProvidePlugin({

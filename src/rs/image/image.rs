@@ -1,6 +1,5 @@
 extern crate cfg_if;
 extern crate image;
-extern crate wasm_bindgen;
 extern crate console_error_panic_hook;
 
 
@@ -10,8 +9,6 @@ use std::panic;
 use cfg_if::cfg_if;
 use image::DynamicImage;
 use image::ImageFormat;
-use std::str;
-use wasm_bindgen::prelude::*;
 
 use crate::log;
 
@@ -23,11 +20,6 @@ cfg_if! {
         #[global_allocator]
         static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
     }
-}
-
-#[wasm_bindgen]
-extern "C" {
-    fn alert(s: &str);
 }
 
 fn load_image_from_array(_array: &[u8]) -> DynamicImage {
@@ -69,7 +61,6 @@ fn get_image_as_array(_img: DynamicImage) -> Vec<u8> {
     out
 }
 
-#[wasm_bindgen]
 pub fn load(_array: &[u8], _deg: u16) -> Vec<u8> {
     let mut img = load_image_from_array(_array);
 
@@ -83,56 +74,54 @@ pub fn load(_array: &[u8], _deg: u16) -> Vec<u8> {
     get_image_as_array(img)
 }
 
-#[wasm_bindgen]
 pub fn grayscale(_array: &[u8]) -> Vec<u8> {
     let mut img = load_image_from_array(_array);
     img = img.grayscale();
     get_image_as_array(img)
 }
 
-#[wasm_bindgen]
 pub fn invert(_array: &[u8]) -> Vec<u8> {
     let mut img = load_image_from_array(_array);
     img.invert();
     get_image_as_array(img)
 }
 
-#[wasm_bindgen]
+
 pub fn blur(_array: &[u8], _sigma: f32) -> Vec<u8> {
     let mut img = load_image_from_array(_array);
     img = img.blur(_sigma);
     get_image_as_array(img)
 }
 
-#[wasm_bindgen]
+
 pub fn unsharpen(_array: &[u8], _sigma: f32, _threshold: i32) -> Vec<u8> {
     let mut img = load_image_from_array(_array);
     img = img.unsharpen(_sigma, _threshold);
     get_image_as_array(img)
 }
 
-#[wasm_bindgen]
+
 pub fn adjust_contrast(_array: &[u8], _contrast: f32) -> Vec<u8> {
     let mut img = load_image_from_array(_array);
     img = img.adjust_contrast(_contrast);
     get_image_as_array(img)
 }
 
-#[wasm_bindgen]
+
 pub fn brighten(_array: &[u8], _value: i32) -> Vec<u8> {
     let mut img = load_image_from_array(_array);
     img = img.brighten(_value);
     get_image_as_array(img)
 }
 
-#[wasm_bindgen]
+
 pub fn hue_rotate(_array: &[u8], _value: i32) -> Vec<u8> {
     let mut img = load_image_from_array(_array);
     img = img.huerotate(_value);
     get_image_as_array(img)
 }
 
-#[wasm_bindgen]
+
 pub fn flip(_array: &[u8], _axis: u8) -> Vec<u8> {
     let mut img = load_image_from_array(_array);
     img = match _axis {
@@ -143,7 +132,7 @@ pub fn flip(_array: &[u8], _axis: u8) -> Vec<u8> {
     get_image_as_array(img)
 }
 
-#[wasm_bindgen]
+
 pub fn crop(_array: &[u8], _start_x: u32, _start_y: u32, _end_x: u32, _end_y: u32) -> Vec<u8> {
     log!("Received buffer");
     let mut img = load_image_from_array(_array);
@@ -151,7 +140,7 @@ pub fn crop(_array: &[u8], _start_x: u32, _start_y: u32, _end_x: u32, _end_y: u3
     get_image_as_array(img)
 }
 
-#[wasm_bindgen]
+
 pub fn resize(
     _array: &[u8],
     _width: u32,
