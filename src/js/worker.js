@@ -12,7 +12,9 @@ onmessage = function (m) {
             console.log(a);
         });
         //https://user-images.githubusercontent.com/18412751/144263975-3b6b42e4-be34-4341-943c-5e851b99e233.png
-        module.loadTest("http://localhost:8080/assets/test.png").then((request) => {
+        module.loadTest("http://localhost:8080/assets/test.png",()=>{
+            console.log("callback");
+        }).then((request) => {
             console.log("load complete",request);
         });
         const num = module.wasm_add(10, 5);
