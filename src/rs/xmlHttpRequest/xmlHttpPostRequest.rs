@@ -112,9 +112,9 @@ impl PostRequest {
         self.request_onerror = callback;
     }
 
-    pub fn set_request_onload(&mut self, closure: Option<Box<dyn Fn(ProgressEvent)>>) {
-        let callback = closure.map(|c| Closure::<dyn Fn(ProgressEvent)>::wrap(c).into_js_value());
-        self.request_onload = callback;
+    pub fn set_request_onload(&mut self, fun:Option<JsValue>) {
+       //let callback = closure.map(|c| Closure::<dyn Fn(ProgressEvent)>::wrap(c).into_js_value());
+        self.request_onload = fun;
     }
 
     pub fn set_request_onloadstart(&mut self, closure: Option<Box<dyn Fn()>>) {
@@ -137,7 +137,7 @@ impl PostRequest {
     }
 
     pub fn send(self, url: &str) -> Result<SendRequest, JsValue> {
-        let request = self.open_request(url);
+        let request = self.get_request(url);
         self.set_upload_callbacks(&request);
         self.set_request_callbacks(&request);
 
@@ -166,15 +166,16 @@ impl PostRequest {
         }
     }
 
-    fn open_request(&self, url: &str) -> XmlHttpRequest {
+    fn get_request(&self, url: &str) -> XmlHttpRequest {
         let request = XmlHttpRequest::new().expect("Could not create request!");
         request
-            .open_with_async("POST", url, self._async)
+            .open_with_async("GET", url, self._async)
             .expect("Could not open request");
         request
     }
 
     fn set_request_callbacks(&self, request: &XmlHttpRequest) {
+        log!("set_request_callbacks");
         if let Some(callback) = &self.request_onabort {
             request.set_onabort(Some(callback.as_ref().unchecked_ref()));
         }
