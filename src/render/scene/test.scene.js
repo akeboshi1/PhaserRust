@@ -8,7 +8,7 @@ export class TestScene extends Phaser.Scene {
     }
 
     preload(){
-        this.load.image("test","assets/test.png");
+        // this.load.image("test","assets/test.png");
     }
 
     create() {
@@ -16,7 +16,7 @@ export class TestScene extends Phaser.Scene {
         grap.fillStyle(0xffcc00, 1);
         grap.fillCircle(100, 100, 15);
 
-        this.add.image(450,350,"test");
+        // this.add.image(450,350,"test");
 
         setTimeout(() => {
             this.worker.postMessage(["wasm"]);
@@ -25,6 +25,9 @@ export class TestScene extends Phaser.Scene {
         this.worker.onmessage = (m) => {
             const data = m.data;
             console.log('data from wasm: ' + data); //拿到 wasm 计算的结果
+            if(m === "test.png"){
+                //this.textures.addImage("test.png",);
+            }
         }
     }
 }

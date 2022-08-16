@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use js_sys::Uint8Array;
 use wasm_bindgen::{prelude::Closure, JsCast, JsValue};
-use web_sys::{Blob, ErrorEvent, FormData, ProgressEvent, XmlHttpRequest};
+use web_sys::{Blob, ErrorEvent, FormData, ProgressEvent, XmlHttpRequest, XmlHttpRequestResponseType};
 use crate::log;
 
 enum PostRequestContent {
@@ -138,7 +138,7 @@ impl PostRequest {
 
     pub fn send(self, url: &str) -> Result<SendRequest, JsValue> {
         let request = self.get_request(url);
-        self.set_upload_callbacks(&request);
+        // self.set_upload_callbacks(&request);
         self.set_request_callbacks(&request);
 
         self.set_headers(&request)?;
