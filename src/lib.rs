@@ -208,9 +208,9 @@ pub async fn loadTest(url: String,f: js_sys::Function)->Result<XmlHttpRequest,Js
         "Authorization".to_string(),
         "Bearer".to_string(),
     );
+    
     let promise = js_sys::Promise::resolve(&f);
     let result = wasm_bindgen_futures::JsFuture::from(promise).await?;
-   
     request.set_request_onload(Some(result));
     let val = rs::xmlHttpRequest::xmlHttpPostRequest::PostRequest::send(request, &url)?;
     Ok(val.request)

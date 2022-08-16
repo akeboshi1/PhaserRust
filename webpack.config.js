@@ -8,12 +8,17 @@ const commonConfig = {
     target: ['web', 'es5'],
     resolve: {
         extensions: [".ts", ".js", ".wasm"],
+        fallback: {
+            path: false,
+            fs: false,
+            child_process: false,
+            crypto: false,
+            url: false,
+        },
     },
     experiments: {
         syncWebAssembly: true,
-    },
-    experiments: {
-        syncWebAssembly: true,
+        topLevelAwait: true
     },
     optimization: {
         minimize: true,
@@ -98,21 +103,32 @@ const renderConfig = Object.assign({}, commonConfig, {
         new WasmPackPlugin({
             crateDirectory: path.resolve(__dirname, "."),
             withTypeScript: true,
-            outDir: path.resolve(__dirname,'pkg'),
-            outName:"wasm"
+            outDir: path.resolve(__dirname, 'pkg'),
+            outName: "wasm"
         }),
         new CopyWebpackPlugin({
             patterns: [
-              { from: "assets", to: "assets", toType: "dir" }
+                { from: "assets", to: "assets", toType: "dir" }
             ]
-          }),
+        }),
         // Have this example work in Edge which doesn't ship `TextEncoder` or
         // `TextDecoder` at this time.
-        new webpack.ProvidePlugin({
-            TextDecoder: ['text-encoding', 'TextDecoder'],
-            TextEncoder: ['text-encoding', 'TextEncoder']
-        })
-    ]
+        // new webpack.ProvidePlugin({
+        //     TextDecoder: ['text-encoding', 'TextDecoder'],
+        //     TextEncoder: ['text-encoding', 'TextEncoder']
+        // })
+    ],
+    devServer: {
+        static: {
+            directory: path.join(__dirname, 'dist'),
+        },
+        compress: false,
+        allowedHosts: "auto",
+        port: 8080,
+        devMiddleware: {
+            writeToDisk: true,
+        }
+    }
 })
 
 module.exports = [

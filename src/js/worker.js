@@ -11,14 +11,13 @@ onmessage = function (m) {
         module.get_from_js().then((a) => {
             console.log(a);
         });
-        let request1;
         //https://user-images.githubusercontent.com/18412751/144263975-3b6b42e4-be34-4341-943c-5e851b99e233.png
-        module.loadTest("http://localhost:8080/assets/test.png", () => {
-            // console.log("loadTest:", request1.responseText);
-            // this.postMessage(request.responseText);
+        module.loadTest("http://localhost:8080/assets/test.txt", () => {
+            console.log("loadTest:", self.request.responseText);
+            this.postMessage(self.request.responseText);
         }).then((request) => {
-            request1 = request;
-            console.log("load complete", request1);
+            self.request = request;
+            console.log("load complete", self);
         });
         const num = module.wasm_add(10, 5);
         run(num);

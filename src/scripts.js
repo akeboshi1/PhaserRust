@@ -1,6 +1,6 @@
 import "phaser";
-import {SceneEnum, SceneManager} from "./render/scene/scene.manager";
-
+import { SceneEnum, SceneManager } from "./render/scene/scene.manager";
+import { LuaFactory } from "wasmoon";
 if (window.Worker) {
     const myWorker = new Worker(new URL('./js/worker.js', import.meta.url));
     // setTimeout(() => {
@@ -40,4 +40,25 @@ if (window.Worker) {
     SceneManager.init(game, myWorker);
     console.dir(SceneEnum);
     SceneManager.add(SceneEnum.TestScene);
+
+    // test add lua
+    const factory = new LuaFactory();
+    const lua = await factory.createEngine();
+    try {
+        // Set a JS function to be a global lua function
+        lua.global.set('sum', (x, y) => x + y)
+        // Run a lua string
+        await lua.doString(`
+        print(sum(10, 10))
+        function multiply(x, y)
+            return x * y
+        end
+        `)
+        // Get a global lua function as a JS function
+        const multiply = lua.global.get('multiply')
+        console.log(multiply(10, 10))
+    } finally {
+        // Close the lua environment, so it can be freed
+        lua.global.close()
+    }
 }
