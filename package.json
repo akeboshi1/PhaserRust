@@ -4,8 +4,15 @@
   "author": "guanxiaomin <327547931@qq.com>",
   "license": "MIT",
   "scripts": {
-    "serve": "webpack serve --mode=development",
+    "serve": "webpack-dev-server --mode=development",
     "build": "rimraf dist && node --max-old-space-size=4096 node_modules/webpack/bin/webpack.js --mode=development --output-path=./dist --progress"
+  },
+  "browser": {
+    "child_process": false,
+    "fs": false,
+    "path": false,
+    "crypto": false,
+    "url": false
   },
   "devDependencies": {
     "@types/webpack-env": "^1.16.0",

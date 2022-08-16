@@ -100,7 +100,7 @@ pub async fn my_async_test() -> Result<JsValue, JsValue> {
 
 // ====================== websocket
 use wasm_bindgen::JsCast;
-use web_sys::{ErrorEvent, MessageEvent, WebSocket, XmlHttpRequest, ProgressEvent};
+use web_sys::{ErrorEvent, MessageEvent, WebSocket, XmlHttpRequest, ProgressEvent, XmlHttpRequestResponseType};
 
 
 // macro_rules! log {
@@ -208,9 +208,10 @@ pub async fn loadTest(url: String,f: js_sys::Function)->Result<XmlHttpRequest,Js
         "Authorization".to_string(),
         "Bearer".to_string(),
     );
-    let ret: JsValue = f.call0(&f)?;
-    log!("loadTest jsvalue:{:?}",ret);
-    request.set_request_onload(Some(ret));
+    
+    let promise = js_sys::Promise::resolve(&f);
+    let result = wasm_bindgen_futures::JsFuture::from(promise).await?;
+    request.set_request_onload(Some(result));
     let val = rs::xmlHttpRequest::xmlHttpPostRequest::PostRequest::send(request, &url)?;
     Ok(val.request)
 }
