@@ -8,6 +8,19 @@ use js_sys::Uint8Array;
 use wasm_bindgen::prelude::*;
 mod rs;
 
+#[wasm_bindgen(module = "/src/js/greet.js")]
+extern "C"{
+    type Greet;
+    fn greet(a:&str)-> String;
+    #[wasm_bindgen(constructor)]
+    fn new() -> Greet;
+    #[wasm_bindgen(method,getter)]
+    fn get_number(this: &Greet) -> i32;
+    #[wasm_bindgen(method,setter)]
+    fn set_number(this: &Greet, val: i32);
+    #[wasm_bindgen(method)]
+    fn render(this:&Greet) -> String;
+}
 #[wasm_bindgen]
 pub fn action(input: &str) -> String {
     let output = if input == "" {
@@ -25,7 +38,10 @@ pub fn action(input: &str) -> String {
 pub fn wasm_add(num1:i32,num2:i32)-> i32 {
 
     let output = num1+num2;
-
+    let greet1 = Greet::new();
+    greet1.set_number(33);
+    log!("render {}", greet1.render());
+    greet(&output.to_string());
     output
 }
 
