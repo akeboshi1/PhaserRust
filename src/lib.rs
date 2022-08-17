@@ -21,6 +21,12 @@ extern "C"{
     #[wasm_bindgen(method)]
     fn render(this:&Greet) -> String;
 }
+
+#[wasm_bindgen(module = "/src/js/workerTest.js")]
+extern {
+    type workerTest;
+    fn workerTest(a:&str)-> String;
+}
 #[wasm_bindgen]
 pub fn action(input: &str) -> String {
     let output = if input == "" {
@@ -116,7 +122,7 @@ pub async fn my_async_test() -> Result<JsValue, JsValue> {
 
 // ====================== websocket
 use wasm_bindgen::JsCast;
-use web_sys::{ErrorEvent, MessageEvent, WebSocket, XmlHttpRequest, ProgressEvent, XmlHttpRequestResponseType};
+use web_sys::{ErrorEvent, MessageEvent, WebSocket, XmlHttpRequest, ProgressEvent, XmlHttpRequestResponseType, DedicatedWorkerGlobalScope};
 
 
 // macro_rules! log {
@@ -224,10 +230,26 @@ pub async fn loadTest(url: String,f: js_sys::Function)->Result<XmlHttpRequest,Js
         "Authorization".to_string(),
         "Bearer".to_string(),
     );
-    
+    workerTest(&url.to_string());
     let promise = js_sys::Promise::resolve(&f);
     let result = wasm_bindgen_futures::JsFuture::from(promise).await?;
     request.set_request_onload(Some(result));
+    let val = rs::xmlHttpRequest::xmlHttpPostRequest::PostRequest::send(request, &url)?;
+    Ok(val.request)
+}
+
+#[wasm_bindgen]
+pub async fn loadTest1(url: String,f: js_sys::Function, context:DedicatedWorkerGlobalScope)->Result<XmlHttpRequest,JsValue> {
+    let mut request = rs::xmlHttpRequest::xmlHttpPostRequest::PostRequest::new_from_default();
+    request.set_header(
+        "Authorization".to_string(),
+        "Bearer".to_string(),
+    );
+    let promise = js_sys::Promise::resolve(&context);
+    let result = wasm_bindgen_futures::JsFuture::from(promise).await?;
+    let jsValue_Url = JsValue::from_str(&url);
+    let callResult = f.call1(&result,&jsValue_Url);
+    request.set_request_onload(Some(callResult.unwrap_or_default()));
     let val = rs::xmlHttpRequest::xmlHttpPostRequest::PostRequest::send(request, &url)?;
     Ok(val.request)
 }
