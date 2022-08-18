@@ -11,35 +11,36 @@ if (window.Worker) {
     //     const data = m.data;
     //     console.log('data from wasm: ' + data); //拿到 wasm 计算的结果
     // }
+    import("../other/pkg/other").then(() => {
+        const config = {
+            type: Phaser.AUTO,
+            parent: "phaser-rust-example",
+            scale: {
+                mode: Phaser.Scale.NONE,
+                width: 800,
+                height: 600,
+            },
+            render: {
+                pixelArt: true,
+                roundPixels: true,
+            },
+            dom: {
+                createContainer: true
+            },
+            backgroundColor: "#4488aa",
+            // fps: {
+            //     target: 60,
+            //     forceSetTimeOut: true
+            // }
+            //pipeline: { "Color": ColorShaderPipeline }
+        };
+        // @ts-ignore
+        const game = new Phaser.Game(config);
 
-    const config = {
-        type: Phaser.AUTO,
-        parent: "phaser-rust-example",
-        scale: {
-            mode: Phaser.Scale.NONE,
-            width: 800,
-            height: 600,
-        },
-        render: {
-            pixelArt: true,
-            roundPixels: true,
-        },
-        dom: {
-            createContainer: true
-        },
-        backgroundColor: "#4488aa",
-        // fps: {
-        //     target: 60,
-        //     forceSetTimeOut: true
-        // }
-        //pipeline: { "Color": ColorShaderPipeline }
-    };
-    // @ts-ignore
-    const game = new Phaser.Game(config);
-
-    SceneManager.init(game, myWorker);
-    console.dir(SceneEnum);
-    SceneManager.add(SceneEnum.TestScene);
+        SceneManager.init(game, myWorker);
+        console.dir(SceneEnum);
+        SceneManager.add(SceneEnum.TestScene);
+    });
 
     // test add lua
     const factory = new LuaFactory();

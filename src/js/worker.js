@@ -13,6 +13,7 @@ onmessage = function (m) {
         });
         //https://user-images.githubusercontent.com/18412751/144263975-3b6b42e4-be34-4341-943c-5e851b99e233.png
         module.loadTest("http://localhost:8080/assets/test.txt", (url) => {
+            // url = ProgressEvent
             console.log("loadTest123:", url);
             this.postMessage(url.target.response);
         }).then((request) => {

@@ -22,11 +22,23 @@ extern "C"{
     fn render(this:&Greet) -> String;
 }
 
+// =================== import js to rust
 #[wasm_bindgen(module = "/src/js/workerTest.js")]
-extern {
+extern "C"{
     type workerTest;
     fn workerTest(a:&str)-> String;
 }
+
+#[wasm_bindgen(module = "/src/render/scene/render.test.js")]
+extern "C"{
+    type RenderTest;
+    fn renderTest(a:&str)-> String;
+    #[wasm_bindgen(constructor)]
+    fn new() -> RenderTest;
+    #[wasm_bindgen(method)]
+    fn render(this:&RenderTest)->String;
+}
+
 #[wasm_bindgen]
 pub fn action(input: &str) -> String {
     let output = if input == "" {
@@ -50,7 +62,6 @@ pub fn wasm_add(num1:i32,num2:i32)-> i32 {
     greet(&output.to_string());
     output
 }
-
 
 // ================= rust future
 use std::future::Future;
@@ -231,6 +242,7 @@ pub async fn loadTest(url: String,f: js_sys::Function)->Result<XmlHttpRequest,Js
         "Bearer".to_string(),
     );
     workerTest(&url.to_string());
+    renderTest("loadTest");
     let promise = js_sys::Promise::resolve(&f);
     let result = wasm_bindgen_futures::JsFuture::from(promise).await?;
     request.set_request_onload(Some(result));
@@ -245,8 +257,6 @@ pub async fn loadTest1(url: String,f: js_sys::Function)->Result<XmlHttpRequest,J
         "Authorization".to_string(),
         "Bearer".to_string(),
     );
-    // let promise = js_sys::Promise::resolve(&context);
-    // let result = wasm_bindgen_futures::JsFuture::from(promise).await?;
     let jsValue_Url = JsValue::from_str(&url);
     log!("jsvalue {:?}",&url);
     let callResult = f.call1(&JsValue::NULL,&jsValue_Url);
