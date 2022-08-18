@@ -239,17 +239,28 @@ pub async fn loadTest(url: String,f: js_sys::Function)->Result<XmlHttpRequest,Js
 }
 
 #[wasm_bindgen]
-pub async fn loadTest1(url: String,f: js_sys::Function, context:DedicatedWorkerGlobalScope)->Result<XmlHttpRequest,JsValue> {
+pub async fn loadTest1(url: String,f: js_sys::Function)->Result<XmlHttpRequest,JsValue> {
     let mut request = rs::xmlHttpRequest::xmlHttpPostRequest::PostRequest::new_from_default();
     request.set_header(
         "Authorization".to_string(),
         "Bearer".to_string(),
     );
-    let promise = js_sys::Promise::resolve(&context);
-    let result = wasm_bindgen_futures::JsFuture::from(promise).await?;
+    // let promise = js_sys::Promise::resolve(&context);
+    // let result = wasm_bindgen_futures::JsFuture::from(promise).await?;
     let jsValue_Url = JsValue::from_str(&url);
-    let callResult = f.call1(&result,&jsValue_Url);
-    request.set_request_onload(Some(callResult.unwrap_or_default()));
+    log!("jsvalue {:?}",&url);
+    let callResult = f.call1(&JsValue::NULL,&jsValue_Url);
+    match callResult {
+        Ok(u)=>{
+            let t = JsValue::js_typeof(&u).as_string().unwrap();
+            log!("ok {:?}",t);
+            request.set_request_onload(Some(u));
+        }
+        Err(v)=>{
+            log!("error");
+            request.set_request_onerror(Some(v));
+        }
+    };
     let val = rs::xmlHttpRequest::xmlHttpPostRequest::PostRequest::send(request, &url)?;
     Ok(val.request)
 }

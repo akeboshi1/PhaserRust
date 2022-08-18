@@ -12,9 +12,9 @@ onmessage = function (m) {
             console.log(a);
         });
         //https://user-images.githubusercontent.com/18412751/144263975-3b6b42e4-be34-4341-943c-5e851b99e233.png
-        module.loadTest("http://localhost:8080/assets/test.txt", (url) => {
-            console.log("loadTest:", self.request.responseText);
-            this.postMessage(self.request.responseText);
+        module.loadTest1("http://localhost:8080/assets/test.txt", (url) => {
+            console.log("loadTest123:", url);
+            this.postMessage(url);
         }).then((request) => {
             self.request = request;
             console.log("load complete", this);
