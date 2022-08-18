@@ -107,9 +107,9 @@ impl PostRequest {
         self.request_onabort = callback;
     }
 
-    pub fn set_request_onerror(&mut self, closure: Option<Box<dyn Fn(ErrorEvent)>>) {
-        let callback = closure.map(|c| Closure::<dyn Fn(ErrorEvent)>::wrap(c).into_js_value());
-        self.request_onerror = callback;
+    pub fn set_request_onerror(&mut self, fun:Option<JsValue>) {
+        // let callback = closure.map(|c| Closure::<dyn Fn(ErrorEvent)>::wrap(c).into_js_value());
+        self.request_onerror = fun;
     }
 
     pub fn set_request_onload(&mut self, fun:Option<JsValue>) {
