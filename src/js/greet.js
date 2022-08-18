@@ -1,5 +1,5 @@
 export function greet(str) {
-    console.log("greet {}", str);
+    console.log(`greet ${str}`);
     return str;
 }
 

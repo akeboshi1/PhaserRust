@@ -19,8 +19,8 @@ export class TestScene extends Phaser.Scene {
         // this.add.image(450,350,"test");
 
         setTimeout(() => {
-            this.worker.postMessage(["wasm"]);
             console.log("setTimeout send to worker");
+            this.worker.postMessage(["wasm"]);
         }, 1000); //1秒后发送消息，用于在编译完成后使 worker 收到消息。
         this.worker.onmessage = (m) => {
             const data = m.data;
