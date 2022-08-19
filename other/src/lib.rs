@@ -26,3 +26,8 @@ impl Foo {
         str
     }
 }
+
+#[wasm_bindgen]
+pub fn OtherFun(a:&str) -> String {
+    format!("OtherFun {}!",a)
+}

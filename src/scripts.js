@@ -41,6 +41,7 @@ if (window.Worker) {
         console.dir(SceneEnum);
         SceneManager.add(SceneEnum.TestScene);
 
+        console.log(other.OtherFun("hahaha!!!"));
         let foo = new other.Foo(100);
         console.log(foo.test());
     });
