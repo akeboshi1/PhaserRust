@@ -11,8 +11,8 @@ if (window.Worker) {
     //     const data = m.data;
     //     console.log('data from wasm: ' + data); //拿到 wasm 计算的结果
     // }
-    import("../other/pkg/other").then(() => {
-        const config = {
+    import("../other/pkg/other").then(other => {
+    const config = {
             type: Phaser.AUTO,
             parent: "phaser-rust-example",
             scale: {
@@ -40,6 +40,9 @@ if (window.Worker) {
         SceneManager.init(game, myWorker);
         console.dir(SceneEnum);
         SceneManager.add(SceneEnum.TestScene);
+
+        let foo = new other.Foo(100);
+        console.log(foo.test());
     });
 
     // test add lua
