@@ -4,7 +4,7 @@
 
 extern crate wasm_bindgen;
 
-use js_sys::Uint8Array;
+use js_sys::{Uint8Array, Number};
 use wasm_bindgen::prelude::*;
 mod rs;
 
@@ -122,7 +122,12 @@ pub async fn get_from_js() -> Result<JsValue, JsValue> {
 
 #[wasm_bindgen]
 pub async fn my_async_test() -> Result<JsValue, JsValue> {
-    // Create a promise that is ready on the next tick of the micro task queue.
+    // from & into 互为相反作用
+    let x = Number::from(64);
+    // into 转换必须写明转换类型
+    let y = "str";
+    let z : String = y.into();
+    // Create a promise that is ready on the next tick of the micro  task queue.
     let promise = js_sys::Promise::resolve(&JsValue::from(32));
     // Convert that promise into a future and make the test wait on it.
     let x = wasm_bindgen_futures::JsFuture::from(promise).await?;
