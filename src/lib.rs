@@ -135,6 +135,84 @@ pub async fn my_async_test() -> Result<JsValue, JsValue> {
     // 自定义恐慌输出
     //assert_eq!(x, 32);
 }
+// ===================== closure
+#[wasm_bindgen]
+extern "C"{
+    fn setInterval(closure: &Closure<dyn FnMut()>, millis: u32) -> f64;
+
+    fn cancelInterval(token: f64);
+
+    #[wasm_bindgen(js_namespace = console)]
+    fn log(s: &str);
+}
+
+#[wasm_bindgen]
+pub struct Interval {
+    closure: Closure<dyn FnMut()>,
+    token: f64,
+}
+
+impl Interval {
+    pub fn new<F: 'static>(millis: u32, f: F) -> Interval
+    where
+        F: FnMut()
+    {
+        // Construct a new closure.
+        let closure = Closure::new(f);
+
+        // Pass the closure to JS, to run every n milliseconds.
+        let token = setInterval(&closure, millis);
+
+        Interval { closure, token }
+    }
+
+    pub fn cancel(&mut self) {
+        cancelInterval(self.token);
+    }
+}
+
+// When the Interval is destroyed, cancel its `setInterval` timer.
+impl Drop for Interval {
+    fn drop(&mut self) {
+        cancelInterval(self.token);
+    }
+}
+
+// Keep logging "hello" every second until the resulting `Interval` is dropped.
+#[wasm_bindgen]
+pub fn hello() -> Interval {
+    Interval::new(1_000, || log("hello"))
+}
+
+// ================== 将生命周期放置在rust中管理
+#[wasm_bindgen]
+pub fn createInterval(val: u32,str:String) -> Interval {
+    let mut count = 0;
+    Interval::new(val, move|| {
+        log(&format!("{}", str));
+        count += 1;
+    })
+}
+
+
+#[wasm_bindgen]
+pub struct TestInterval {
+    content: Interval
+}
+
+#[wasm_bindgen]
+impl TestInterval {
+    #[wasm_bindgen(constructor)]
+    pub fn new(val: u32,str:String) -> TestInterval {
+        let content = createInterval(val,str);
+        TestInterval{ content : content }
+    }
+
+    pub fn cancel(&mut self) {
+        self.content.cancel();
+    }
+
+}
 
 // ====================== websocket
 use wasm_bindgen::JsCast;
