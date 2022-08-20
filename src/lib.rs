@@ -4,7 +4,7 @@
 
 extern crate wasm_bindgen;
 
-use js_sys::Uint8Array;
+use js_sys::{Uint8Array, Number};
 use wasm_bindgen::prelude::*;
 mod rs;
 
@@ -122,13 +122,96 @@ pub async fn get_from_js() -> Result<JsValue, JsValue> {
 
 #[wasm_bindgen]
 pub async fn my_async_test() -> Result<JsValue, JsValue> {
-    // Create a promise that is ready on the next tick of the micro task queue.
+    // from & into 互为相反作用
+    let x = Number::from(64);
+    // into 转换必须写明转换类型
+    let y = "str";
+    let z : String = y.into();
+    // Create a promise that is ready on the next tick of the micro  task queue.
     let promise = js_sys::Promise::resolve(&JsValue::from(32));
     // Convert that promise into a future and make the test wait on it.
     let x = wasm_bindgen_futures::JsFuture::from(promise).await?;
     Ok(x)
     // 自定义恐慌输出
     //assert_eq!(x, 32);
+}
+// ===================== closure
+#[wasm_bindgen]
+extern "C"{
+    fn setInterval(closure: &Closure<dyn FnMut()>, millis: u32) -> f64;
+
+    fn cancelInterval(token: f64);
+
+    #[wasm_bindgen(js_namespace = console)]
+    fn log(s: &str);
+}
+
+#[wasm_bindgen]
+pub struct Interval {
+    closure: Closure<dyn FnMut()>,
+    token: f64,
+}
+
+impl Interval {
+    pub fn new<F: 'static>(millis: u32, f: F) -> Interval
+    where
+        F: FnMut()
+    {
+        // Construct a new closure.
+        let closure = Closure::new(f);
+
+        // Pass the closure to JS, to run every n milliseconds.
+        let token = setInterval(&closure, millis);
+
+        Interval { closure, token }
+    }
+
+    pub fn cancel(&mut self) {
+        cancelInterval(self.token);
+    }
+}
+
+// When the Interval is destroyed, cancel its `setInterval` timer.
+impl Drop for Interval {
+    fn drop(&mut self) {
+        cancelInterval(self.token);
+    }
+}
+
+// Keep logging "hello" every second until the resulting `Interval` is dropped.
+#[wasm_bindgen]
+pub fn hello() -> Interval {
+    Interval::new(1_000, || log("hello"))
+}
+
+// ================== 将生命周期放置在rust中管理
+#[wasm_bindgen]
+pub fn createInterval(val: u32,str:String) -> Interval {
+    let mut count = 0;
+    Interval::new(val, move|| {
+        log(&format!("{}", str));
+        count += 1;
+    })
+}
+
+
+#[wasm_bindgen]
+pub struct TestInterval {
+    content: Interval
+}
+
+#[wasm_bindgen]
+impl TestInterval {
+    #[wasm_bindgen(constructor)]
+    pub fn new(val: u32,str:String) -> TestInterval {
+        let content = createInterval(val,str);
+        TestInterval{ content : content }
+    }
+
+    pub fn cancel(&mut self) {
+        self.content.cancel();
+    }
+
 }
 
 // ====================== websocket
