@@ -189,14 +189,14 @@ impl Interval {
     }
 
     pub fn cancel(&mut self) {
-        cancelInterval(self.token);
+        clearInterval(self.token);
     }
 }
 
 // When the Interval is destroyed, cancel its `setInterval` timer.
 impl Drop for Interval {
     fn drop(&mut self) {
-        cancelInterval(self.token);
+        clearInterval(self.token);
     }
 }
 
