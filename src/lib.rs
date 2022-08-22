@@ -3,8 +3,9 @@
 #[warn(unused_must_use)]
 
 extern crate wasm_bindgen;
-
+extern crate serde_json;
 use js_sys::{Uint8Array, Number};
+use serde::{Serialize, Deserialize};
 use wasm_bindgen::prelude::*;
 mod rs;
 
@@ -140,11 +141,32 @@ pub async fn my_async_test() -> Result<JsValue, JsValue> {
 extern "C"{
     fn setInterval(closure: &Closure<dyn FnMut()>, millis: u32) -> f64;
 
-    fn cancelInterval(token: f64);
+    fn clearInterval(token: f64);
 
     #[wasm_bindgen(js_namespace = console)]
     fn log(s: &str);
 }
+
+#[wasm_bindgen(module = "/src/js/interval.js")]
+extern "C"{
+    type JSInterval;
+    fn setToken(a:f64)-> f64;
+    #[wasm_bindgen(constructor)]
+    fn new() -> JSInterval;
+    #[wasm_bindgen(method,getter)]
+    fn get_token(this:&JSInterval)->f64;
+    #[wasm_bindgen(method,setter)]
+    fn set_token(this:&JSInterval,millis:f64);
+}
+
+
+#[derive(Serialize, Deserialize)]
+pub struct Element {
+    name: u32,
+    id: u32,
+    parent_id: u32,
+}
+
 
 #[wasm_bindgen]
 pub struct Interval {
@@ -200,11 +222,19 @@ pub struct TestInterval {
     content: Interval
 }
 
+#[derive(Serialize, Deserialize)]
+pub struct Example {
+    pub token: f64
+}
+
 #[wasm_bindgen]
 impl TestInterval {
     #[wasm_bindgen(constructor)]
     pub fn new(val: u32,str:String) -> TestInterval {
         let content = createInterval(val,str);
+        // let mut jsInterval:Example = jsval.into_serde().unwrap();
+        // jsInterval.token = content.token;
+        setToken(content.token);
         TestInterval{ content : content }
     }
 
