@@ -185,25 +185,22 @@ impl Interval {
         // Pass the closure to JS, to run every n milliseconds.
         let token = setInterval(&closure, millis);
 
-        Interval { closure, token }
+        Interval {  closure , token }
     }
 
-    pub fn cancel(&mut self) {
-        clearInterval(self.token);
-    }
 }
 
 // When the Interval is destroyed, cancel its `setInterval` timer.
-impl Drop for Interval {
-    fn drop(&mut self) {
-        clearInterval(self.token);
-    }
-}
+// impl Drop for Interval {
+//     fn drop(&mut self) {
+//         clearInterval(self.token);
+//     }
+// }
 
 // Keep logging "hello" every second until the resulting `Interval` is dropped.
 #[wasm_bindgen]
 pub fn hello() -> Interval {
-    Interval::new(1_000, || log("hello"))
+    Interval::new(1000, || log("hello"))
 }
 
 // ================== 将生命周期放置在rust中管理
@@ -215,6 +212,19 @@ pub fn createInterval(val: u32,str:String) -> Interval {
         count += 1;
     })
 }
+
+// #[wasm_bindgen]
+// pub fn createInterval(val: u32,str:String) -> Interval {
+//     let mut count = 0;
+//     let closure = Closure::wrap(Box::new(move || {
+//         log(&format!("{} {}",str,count));
+//         count+=1;
+//     }) as Box<dyn FnMut()>);
+//     //     // Pass the closure to JS, to run every n milliseconds.
+//     let token = setInterval(&closure, val);
+
+//     Interval { closure, token }
+// }
 
 
 #[wasm_bindgen]
@@ -238,9 +248,9 @@ impl TestInterval {
         TestInterval{ content : content }
     }
 
-    pub fn cancel(&mut self) {
-        self.content.cancel();
-    }
+    // pub fn cancel(&mut self) {
+    //     self.content.cancel();
+    // }
 
 }
 
