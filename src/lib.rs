@@ -159,15 +159,6 @@ extern "C"{
     fn set_token(this:&JSInterval,millis:f64);
 }
 
-
-#[derive(Serialize, Deserialize)]
-pub struct Element {
-    name: u32,
-    id: u32,
-    parent_id: u32,
-}
-
-
 #[wasm_bindgen]
 pub struct Interval {
     closure: Closure<dyn FnMut()>,
@@ -396,6 +387,20 @@ pub async fn loadTest1(url: String,f: js_sys::Function)->Result<XmlHttpRequest,J
     };
     let val = rs::xmlHttpRequest::xmlHttpPostRequest::PostRequest::send(request, &url)?;
     Ok(val.request)
+}
+
+// ============== serde
+#[derive(Serialize, Deserialize)]
+pub struct Element {
+    name: String,
+    id: String,
+    parent: String,
+}
+
+#[wasm_bindgen]
+pub fn iteratorSet(value:&JsValue) {
+    let element:Element = value.into_serde().unwrap();
+    log(&element.name); 
 }
 
 
