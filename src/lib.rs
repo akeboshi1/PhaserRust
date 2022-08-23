@@ -389,7 +389,7 @@ pub async fn loadTest1(url: String,f: js_sys::Function)->Result<XmlHttpRequest,J
     Ok(val.request)
 }
 
-// ============== serde
+// ============== serde 序列化&&反序列化&&js《-》rust传输数据
 #[derive(Serialize, Deserialize)]
 pub struct Element {
     name: String,
@@ -397,12 +397,44 @@ pub struct Element {
     parent: String,
 }
 
+#[derive(Debug)]
+enum ElementFoo<'a> {
+    Value(&'a str),
+    Nothing,
+}
+
 #[wasm_bindgen]
-pub fn iteratorSet(value:&JsValue) {
+pub fn wasmSerde(value:&JsValue) {
     let element:Element = value.into_serde().unwrap();
     log(&element.name); 
 }
 
+#[wasm_bindgen]
+pub fn wasmSerde1(value:&JsValue) -> JsValue{
+    let elements:Vec<Element> = value.into_serde().unwrap();
+    let iter = elements.iter();
+    let mut tempStr = String::new();
+    let foos = iter.map(|val|{
+        // let str = String::new();
+        let str = val.id.as_str();
+        tempStr+=str;
+        ElementFoo::Value(str)
+    }).collect::<Vec<ElementFoo>>();
+   let jsStr = JsValue::from_str(&tempStr);
+   jsStr
+}
+
+#[derive(Debug)]
+enum Foo {
+    Value(i32),
+    Nothing,
+}
+
+fn main() {
+    let bar = [1, 2, 3];
+    let foos = bar.iter().map(|&x| Foo::Value(x)).collect::<Vec<Foo>>();
+    println!("{:?}", foos);
+}
 
 
 

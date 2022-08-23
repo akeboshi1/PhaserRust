@@ -16,6 +16,10 @@ onmessage = function (m) {
             console.log("jsinterval010110")
         }, 10);
         module.wasmSerde({name:"1",id:"2",parent:"3"});
+        console.log(module.wasmSerde1([
+        {name:"name1",id:"id1",parent:"parent1"},
+        {name:"name2",id:"id2",parent:"parent2"},
+        {name:"name3",id:"id3",parent:"parent3"}]));
         // let interval = module.hello();
         //https://user-images.githubusercontent.com/18412751/144263975-3b6b42e4-be34-4341-943c-5e851b99e233.png
         module.loadTest("http://localhost:8080/assets/test.txt", (url) => {
