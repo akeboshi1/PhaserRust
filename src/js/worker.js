@@ -15,6 +15,7 @@ onmessage = function (m) {
         let interval =setInterval(() => {
             console.log("jsinterval010110")
         }, 10);
+        module.wasmSerde({name:"1",id:"2",parent:"3"});
         // let interval = module.hello();
         //https://user-images.githubusercontent.com/18412751/144263975-3b6b42e4-be34-4341-943c-5e851b99e233.png
         module.loadTest("http://localhost:8080/assets/test.txt", (url) => {
