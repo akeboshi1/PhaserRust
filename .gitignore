@@ -6,4 +6,5 @@ other/target
 other/pkg/*
 other/pkg/target/*
 other/Cargo.lock
+src/rs/proto/target/*
 node_modules/
