@@ -4,6 +4,7 @@
 
 extern crate wasm_bindgen;
 extern crate serde_json;
+
 use js_sys::{Uint8Array, Number};
 use serde::{Serialize, Deserialize};
 use wasm_bindgen::prelude::*;
