@@ -1,4 +1,7 @@
-fn main() {
+
+use std::io::Result;
+fn main() -> Result<()> {
+
     protobuf_codegen::Codegen::new()
         .include("src")
         .inputs(["src/test.proto"])
@@ -6,6 +9,7 @@ fn main() {
         .run_from_script();
 
     prost_build::Config::new()
-        .compile_protos(&["src/test.proto"], &["src"])
-        .unwrap();
+        .compile_protos(&["src/test.proto"], &["src"])?;
+        Ok(())
 }
+
