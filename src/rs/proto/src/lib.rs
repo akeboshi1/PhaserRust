@@ -3,7 +3,7 @@ mod rust_protobuf_protos {
 }
 
 mod prost_protos {
-    include!(concat!(env!("OUT_DIR"), "/grpc_plat_proto.rs"));
+    include!(concat!(env!("OUT_DIR"), "/_.rs"));
 }
 
 #[cfg(test)]

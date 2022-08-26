@@ -1,6 +1,9 @@
 
 onmessage = function (m) {
     console.log("test11");
+    import("pkt_wasm").then(pkt =>{
+        console.log(pkt);
+    });
     import("../../pkg/wasm").then(module => {
         module.action("wasm");
         module.test().then((data) => {

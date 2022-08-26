@@ -1,13 +1,12 @@
 #![allow(non_snake_case)]
-#[warn(unused_imports)]
 #[warn(unused_must_use)]
 
 extern crate wasm_bindgen;
 extern crate serde_json;
-
 use js_sys::{Uint8Array, Number};
 use serde::{Serialize, Deserialize};
 use wasm_bindgen::prelude::*;
+use pktwasm;
 mod rs;
 
 #[wasm_bindgen(module = "/src/js/greet.js")]
@@ -49,7 +48,9 @@ pub fn action(input: &str) -> String {
         format!("Hello, {}!", input)
     };
 
-    log!("Wasm in Worker says: {}",&output);
+    // pkt_wasm
+    // pkt_wasm::PktLog("Wasm in Worker says: {}",&output);
+   // pkt_wasm("Wasm in Worker says: {}",&output);
 
     output
 }
@@ -60,6 +61,9 @@ pub fn wasm_add(num1:i32,num2:i32)-> i32 {
     let output = num1+num2;
     let greet1 = Greet::new();
     greet1.set_number(33);
+    let mut str = String::new();
+    str = output.to_string();
+    pktwasm::log!("pkt wasm{:?}",str);
     log!("render {}", greet1.render());
     greet(&output.to_string());
     output
