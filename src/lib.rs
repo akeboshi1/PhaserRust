@@ -47,8 +47,7 @@ pub fn action(input: &str) -> String {
     } else {
         format!("Hello, {}!", input)
     };
-
-    // pkt_wasm
+    pktwasm::log!("{:?}",input);
     // pkt_wasm::PktLog("Wasm in Worker says: {}",&output);
    // pkt_wasm("Wasm in Worker says: {}",&output);
 
