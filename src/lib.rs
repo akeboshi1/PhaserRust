@@ -1,11 +1,12 @@
 #![allow(non_snake_case)]
-#[warn(unused_imports)]
 #[warn(unused_must_use)]
 
 extern crate wasm_bindgen;
-
-use js_sys::Uint8Array;
+extern crate serde_json;
+use js_sys::{Uint8Array, Number};
+use serde::{Serialize, Deserialize};
 use wasm_bindgen::prelude::*;
+use pktwasm;
 mod rs;
 
 #[wasm_bindgen(module = "/src/js/greet.js")]
@@ -21,6 +22,24 @@ extern "C"{
     #[wasm_bindgen(method)]
     fn render(this:&Greet) -> String;
 }
+
+// =================== import js to rust
+#[wasm_bindgen(module = "/src/js/workerTest.js")]
+extern "C"{
+    type workerTest;
+    fn workerTest(a:&str)-> String;
+}
+
+#[wasm_bindgen(module = "/src/render/scene/render.test.js")]
+extern "C"{
+    type RenderTest;
+    fn renderTest(a:&str)-> String;
+    #[wasm_bindgen(constructor)]
+    fn new() -> RenderTest;
+    #[wasm_bindgen(method)]
+    fn render(this:&RenderTest)->String;
+}
+
 #[wasm_bindgen]
 pub fn action(input: &str) -> String {
     let output = if input == "" {
@@ -28,8 +47,9 @@ pub fn action(input: &str) -> String {
     } else {
         format!("Hello, {}!", input)
     };
-
-    log!("Wasm in Worker says: {}",&output);
+    pktwasm::log!("{:?}",input);
+    // pkt_wasm::PktLog("Wasm in Worker says: {}",&output);
+   // pkt_wasm("Wasm in Worker says: {}",&output);
 
     output
 }
@@ -40,11 +60,13 @@ pub fn wasm_add(num1:i32,num2:i32)-> i32 {
     let output = num1+num2;
     let greet1 = Greet::new();
     greet1.set_number(33);
+    let mut str = String::new();
+    str = output.to_string();
+    pktwasm::log!("pkt wasm{:?}",str);
     log!("render {}", greet1.render());
     greet(&output.to_string());
     output
 }
-
 
 // ================= rust future
 use std::future::Future;
@@ -105,7 +127,12 @@ pub async fn get_from_js() -> Result<JsValue, JsValue> {
 
 #[wasm_bindgen]
 pub async fn my_async_test() -> Result<JsValue, JsValue> {
-    // Create a promise that is ready on the next tick of the micro task queue.
+    // from & into 互为相反作用
+    let x = Number::from(64);
+    // into 转换必须写明转换类型
+    let y = "str";
+    let z : String = y.into();
+    // Create a promise that is ready on the next tick of the micro  task queue.
     let promise = js_sys::Promise::resolve(&JsValue::from(32));
     // Convert that promise into a future and make the test wait on it.
     let x = wasm_bindgen_futures::JsFuture::from(promise).await?;
@@ -113,10 +140,118 @@ pub async fn my_async_test() -> Result<JsValue, JsValue> {
     // 自定义恐慌输出
     //assert_eq!(x, 32);
 }
+// ===================== closure
+#[wasm_bindgen]
+extern "C"{
+    fn setInterval(closure: &Closure<dyn FnMut()>, millis: u32) -> f64;
+
+    fn clearInterval(token: f64);
+
+    #[wasm_bindgen(js_namespace = console)]
+    fn log(s: &str);
+}
+
+#[wasm_bindgen(module = "/src/js/interval.js")]
+extern "C"{
+    type JSInterval;
+    fn setToken(a:f64)-> f64;
+    #[wasm_bindgen(constructor)]
+    fn new() -> JSInterval;
+    #[wasm_bindgen(method,getter)]
+    fn get_token(this:&JSInterval)->f64;
+    #[wasm_bindgen(method,setter)]
+    fn set_token(this:&JSInterval,millis:f64);
+}
+
+#[wasm_bindgen]
+pub struct Interval {
+    closure: Closure<dyn FnMut()>,
+    token: f64,
+}
+
+impl Interval {
+    pub fn new<F: 'static>(millis: u32, f: F) -> Interval
+    where
+        F: FnMut()
+    {
+        // Construct a new closure.
+        let closure = Closure::new(f);
+
+        // Pass the closure to JS, to run every n milliseconds.
+        let token = setInterval(&closure, millis);
+
+        Interval {  closure , token }
+    }
+
+}
+
+// When the Interval is destroyed, cancel its `setInterval` timer.
+// impl Drop for Interval {
+//     fn drop(&mut self) {
+//         clearInterval(self.token);
+//     }
+// }
+
+// Keep logging "hello" every second until the resulting `Interval` is dropped.
+#[wasm_bindgen]
+pub fn hello() -> Interval {
+    Interval::new(1000, || log("hello"))
+}
+
+// ================== 将生命周期放置在rust中管理
+#[wasm_bindgen]
+pub fn createInterval(val: u32,str:String) -> Interval {
+    let mut count = 0;
+    Interval::new(val, move|| {
+        log(&format!("{}", str));
+        count += 1;
+    })
+}
+
+// #[wasm_bindgen]
+// pub fn createInterval(val: u32,str:String) -> Interval {
+//     let mut count = 0;
+//     let closure = Closure::wrap(Box::new(move || {
+//         log(&format!("{} {}",str,count));
+//         count+=1;
+//     }) as Box<dyn FnMut()>);
+//     //     // Pass the closure to JS, to run every n milliseconds.
+//     let token = setInterval(&closure, val);
+
+//     Interval { closure, token }
+// }
+
+
+#[wasm_bindgen]
+pub struct TestInterval {
+    content: Interval
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct Example {
+    pub token: f64
+}
+
+#[wasm_bindgen]
+impl TestInterval {
+    #[wasm_bindgen(constructor)]
+    pub fn new(val: u32,str:String) -> TestInterval {
+        let content = createInterval(val,str);
+        // let mut jsInterval:Example = jsval.into_serde().unwrap();
+        // jsInterval.token = content.token;
+        setToken(content.token);
+        TestInterval{ content : content }
+    }
+
+    // pub fn cancel(&mut self) {
+    //     self.content.cancel();
+    // }
+
+}
 
 // ====================== websocket
 use wasm_bindgen::JsCast;
-use web_sys::{ErrorEvent, MessageEvent, WebSocket, XmlHttpRequest, ProgressEvent, XmlHttpRequestResponseType};
+use web_sys::{ErrorEvent, MessageEvent, WebSocket, XmlHttpRequest, ProgressEvent, XmlHttpRequestResponseType, DedicatedWorkerGlobalScope};
 
 
 // macro_rules! log {
@@ -224,7 +359,8 @@ pub async fn loadTest(url: String,f: js_sys::Function)->Result<XmlHttpRequest,Js
         "Authorization".to_string(),
         "Bearer".to_string(),
     );
-    
+    workerTest(&url.to_string());
+    renderTest("loadTest");
     let promise = js_sys::Promise::resolve(&f);
     let result = wasm_bindgen_futures::JsFuture::from(promise).await?;
     request.set_request_onload(Some(result));
@@ -232,6 +368,77 @@ pub async fn loadTest(url: String,f: js_sys::Function)->Result<XmlHttpRequest,Js
     Ok(val.request)
 }
 
+#[wasm_bindgen]
+pub async fn loadTest1(url: String,f: js_sys::Function)->Result<XmlHttpRequest,JsValue> {
+    let mut request = rs::xmlHttpRequest::xmlHttpPostRequest::PostRequest::new_from_default();
+    request.set_header(
+        "Authorization".to_string(),
+        "Bearer".to_string(),
+    );
+    let jsValue_Url = JsValue::from_str(&url);
+    log!("jsvalue {:?}",&url);
+    let callResult = f.call1(&JsValue::NULL,&jsValue_Url);
+    match callResult {
+        Ok(u)=>{
+            let t = JsValue::js_typeof(&u).as_string().unwrap();
+            log!("ok {:?}",t);
+            request.set_request_onload(Some(u));
+        }
+        Err(v)=>{
+            log!("error");
+            request.set_request_onerror(Some(v));
+        }
+    };
+    let val = rs::xmlHttpRequest::xmlHttpPostRequest::PostRequest::send(request, &url)?;
+    Ok(val.request)
+}
+
+// ============== serde 序列化&&反序列化&&js《-》rust传输数据
+#[derive(Serialize, Deserialize)]
+pub struct Element {
+    name: String,
+    id: String,
+    parent: String,
+}
+
+#[derive(Debug)]
+enum ElementFoo<'a> {
+    Value(&'a str),
+    Nothing,
+}
+
+#[wasm_bindgen]
+pub fn wasmSerde(value:&JsValue) {
+    let element:Element = value.into_serde().unwrap();
+    log(&element.name); 
+}
+
+#[wasm_bindgen]
+pub fn wasmSerde1(value:&JsValue) -> JsValue{
+    let elements:Vec<Element> = value.into_serde().unwrap();
+    let iter = elements.iter();
+    let mut tempStr = String::new();
+    let foos = iter.map(|val|{
+        // let str = String::new();
+        let str = val.id.as_str();
+        tempStr+=str;
+        ElementFoo::Value(str)
+    }).collect::<Vec<ElementFoo>>();
+   let jsStr = JsValue::from_str(&tempStr);
+   jsStr
+}
+
+#[derive(Debug)]
+enum Foo {
+    Value(i32),
+    Nothing,
+}
+
+fn main() {
+    let bar = [1, 2, 3];
+    let foos = bar.iter().map(|&x| Foo::Value(x)).collect::<Vec<Foo>>();
+    println!("{:?}", foos);
+}
 
 
 

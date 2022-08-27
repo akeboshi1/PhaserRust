@@ -2710,6 +2710,11 @@ pkg-dir@^4.1.0, pkg-dir@^4.2.0:
   dependencies:
     find-up "^4.0.0"
 
+pkt_wasm@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/pkt_wasm/-/pkt_wasm-0.1.0.tgz#2abf3dade6b098da482b0dd6fcb0ede700971491"
+  integrity sha512-/Ss5Hgyrgi9G/fg4mvkwyeqxNGgQybeuyUQ6vh0tdm7VM4foC/ycN6CI/y7yPvd+WecbH/z6dwnJqTu4yH3OaA==
+
 pretty-error@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/pretty-error/-/pretty-error-4.0.0.tgz#90a703f46dd7234adb46d0f84823e9d1cb8f10d6"
