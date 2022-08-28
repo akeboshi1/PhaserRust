@@ -4,7 +4,7 @@ struct IteratorNode<'a, T> {
 }
 
 impl Iterator for IteratorNode<'a, T> {
-    type Item = &'a It;
+    type Item = &'a T;
     
     fn next(&mut self) -> Option<Self::Item> {
         let new_next = self.curr + self.next;
