@@ -9,8 +9,7 @@ repository = "https://github.com/akeboshi1/PhaserRust"
 wasm-opt = ["-Oz", "--enable-mutable-globals"]
 
 [lib]
-crate-type = ["cdylib"]
-path = "./src/lib.rs"
+path = "./src/game.rs"
 
 [dependencies]
 wasm-bindgen = {version ="0.2.64",features = ["serde-serialize"]}
