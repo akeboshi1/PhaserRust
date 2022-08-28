@@ -1,21 +1,26 @@
 use super::timer;
 
-pub trait GameLoop {
-    fn get_delay(&self)->f64;
-    fn update(&self,time:f64)->f64;
+pub trait Loop<T> {
+    type item;
+    fn get_delay(&self)->T;
+    fn update(&self,time:T)->T;
+}
+pub struct GameLoop<T>{
+    delay:T
 }
 
-// impl GameLoop for TestLoop{
-//     fn update(&self,time:f64)->f64{
-//         let now = timer::now();
-//         now-time
-//     }
+impl Loop<f64> for GameLoop<f64>{
+    type item = f64;
+    fn get_delay(&self)->f64 {
+        self.delay
+    }
 
-//     fn get_delay(&self)->f64 {
-//         self.delay
-//     }
-// }
-
-// pub struct TestLoop{
-//     delay:f64
-// }
+    fn update(&self,time:f64)->f64{
+        let now = timer::now();
+        let tmpDelay = now-time;
+        if(tmpDelay<self.delay){
+            
+        }
+        tmpDelay
+    }
+}
