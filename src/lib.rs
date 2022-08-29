@@ -260,7 +260,7 @@ use web_sys::{ErrorEvent, MessageEvent, WebSocket, XmlHttpRequest, ProgressEvent
 
 #[wasm_bindgen(start)]
 pub fn start_websocket() -> Result<(), JsValue> {
-    // Connect to an echo server
+    // Connect to an echo server socketAddr:wss://echo.websocket.events
     let ws = WebSocket::new("wss://echo.websocket.events")?;
     // For small binary messages, like CBOR, Arraybuffer is more efficient than Blob handling
     ws.set_binary_type(web_sys::BinaryType::Arraybuffer);
