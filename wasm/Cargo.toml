@@ -10,8 +10,8 @@ wasm-opt = ["-Oz", "--enable-mutable-globals"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-[lib]
-path = "./src/lib.rs"
+[[bin]]
+name = "wasm"
 
 [dependencies]
 wasm-bindgen = {version ="0.2.64",features = ["serde-serialize"]}
@@ -20,7 +20,9 @@ js-sys = "0.3.36"
 futures = { version = "0.3"}
 serde_json = "1.0.32"
 serde = { version = "1.0.80", features = ["derive"] }
-
+num-traits = "0.2"
+num-derive = "0.2"
+buffer = "0.1.9"
 [dependencies.web-sys]
 version = "^0.3.59"
 features = [
