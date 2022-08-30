@@ -37,7 +37,7 @@ enum PacketHeaderKey {
    * |    timestamp   +   double  +   8Bytes  +   parameter of packet |
    * +------------------------------------------------------------+
    */
-pub struct PacketHeader {
+pub struct PacketHeader<'a,'b> {
     head_len :u32,
     len:u32,
     offset:u32,
@@ -45,10 +45,11 @@ pub struct PacketHeader {
     param:u32,
     time_stamp:u32,
     magic:u32,
+    buf:BufferRef<'a, 'b>
 }
 
-impl<'a,'b> PacketHeader{
-   pub fn new()-> Self {
+impl <'a,'b>PacketHeader<'a, 'b>{
+   pub fn new(buffer: &'a mut [u8], initialized: &'b mut usize)-> Self {
       PacketHeader {
         head_len : HEAD_BYTES_SIZE,
         len : 0,
@@ -57,11 +58,8 @@ impl<'a,'b> PacketHeader{
         param : 0,
         time_stamp : 0,
         magic : PACKET_MAGIC_D,
+        buf: BufferRef::new(buffer, initialized)
       }
-   }
-
-   pub fn init_buffer(&self,buffer: &'a mut [u8], initialized: &'b mut usize) -> BufferRef<'a, 'b> {
-       BufferRef::new(buffer, initialized)
    }
 
    pub fn set_params(&mut self , key:u8, data:u32){
@@ -106,14 +104,33 @@ impl<'a,'b> PacketHeader{
       }
    }
 
-   pub fn pack(&self,buffer:BufferRef)-> BufferRef {
-       &self.clean_buf(buffer);
-      
-       buffer
+   pub fn pack(&mut self,buffer: &'a mut [u8], initialized: &'b mut usize)-> &BufferRef<'a,'b> {
+       self.clean_buf(buffer,initialized);
+
+    //    .extend(bytes.iter().cloned())
+    //    self.buf.write(self.magic)
+    //    this._buf.writeUInt16LE(this._magic, this._offset);
+    // this._offset += 2;
+
+    // this._buf.writeUInt32LE(this._len, this._offset);
+    // this._offset += 4;
+
+    // this._buf.writeUInt32LE(this._opcode, this._offset);
+    // this._offset += 4;
+
+    // this._buf.writeUInt32LE(this._uuid, this._offset);
+    // this._offset += 4;
+
+    // this._buf.writeUInt32LE(this._param, this._offset);
+    // this._offset += 4;
+
+    // this._buf.writeDoubleLE(this._timestamp, this._offset);
+    // this._offset += 8;
+       &self.buf
    }
 
-   pub fn clean_buf(&mut self,buffer:BufferRef){
-     buffer::
+   pub fn clean_buf(&mut self,buffer:&'a mut [u8], initialized: &'b mut usize){
+      self.buf = BufferRef::new(buffer, initialized);
       self.offset = 0;
    }
 
