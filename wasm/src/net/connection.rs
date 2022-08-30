@@ -1,12 +1,15 @@
 extern crate wasm_bindgen;
 use std::u8;
 
+use web_sys::console;
 use web_sys::{ErrorEvent,MessageEvent,WebSocket};
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use num_derive::FromPrimitive;    
 use num_traits::FromPrimitive;
 use js_sys::{ArrayBuffer, Uint8Array};
+
+use crate::log;
 
 #[repr(u16)]
 #[derive(FromPrimitive)]
@@ -74,13 +77,14 @@ impl Connection {
         }
     }
 
-    pub fn send(&self,data:JsValue) -> Result<(),JsValue> {
+    pub fn send(&self,data:ArrayBuffer) -> Result<(),JsValue> {
         let socket:&WebSocket = self.get_socket();
         // let bytes = JsValue::from
         // let bytes: &Vec<u8> = &bytes.to_vec();
         let onmessage_callback = Closure::<dyn FnMut(_)>::new(move |e:MessageEvent|{
             if let Ok(buf) = e.data().dyn_into::<js_sys::ArrayBuffer>() {
                // todo deserialize
+               log!("{:?}","todo data deserialize");
             }
         });
         socket.set_onmessage(Some(onmessage_callback.as_ref().unchecked_ref()));
@@ -88,12 +92,14 @@ impl Connection {
 
         let onerror_callback = Closure::<dyn FnMut(_)>::new(move |e: ErrorEvent| {
             // todo socket error
+            log!("{:?}","socket error");
         });
         socket.set_onerror(Some(onerror_callback.as_ref().unchecked_ref()));
         onerror_callback.forget();
    
         let onopen_callback = Closure::<dyn FnMut()>::new(move || {
             // todo socket open
+            log!("{:?}","socket open");
         });
         socket.set_onopen(Some(onopen_callback.as_ref().unchecked_ref()));
         onopen_callback.forget();
