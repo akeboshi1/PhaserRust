@@ -1,6 +1,9 @@
 /target
 Cargo.lock
 dist/*
+wasm/Cargo.lock
+wasm/target
+wasm/target/*
 other/pkg
 other/target
 other/pkg/*
