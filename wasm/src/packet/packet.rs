@@ -254,7 +254,7 @@ impl Packet {
         }
      }
   
-     pub fn get_buf(&self) -> &Vec<u8> {
+     pub fn get_buf(&mut self) -> &Vec<u8> {
          &self.buf
      }
   
@@ -263,9 +263,9 @@ impl Packet {
          self.buf = buffer.clone()[..].to_vec();
      }
   
-     pub fn update_offset(&mut self,offset:u8)-> u8{
+     pub fn update_offset<'a>(&'a mut self,offset:u8)-> &'a u8{
          self.head_offset += offset;
-         self.head_offset
+         &self.head_offset
      }
   
      pub fn pack<'a>(&'a mut self)-> &'a Vec<u8> {
@@ -333,11 +333,10 @@ impl Packet {
         let mut head_buf_available = head_buf.clone();
         let len = cmp::min(head_buf_available[HEAD_BYTES_SIZE..].len(), self.buf.len());
         head_buf_available[HEAD_BYTES_SIZE..][..len].copy_from_slice(&self.buf[..len]);
-        unsafe {
-            self.head_offset == u8::from_usize(len).unwrap();
-        }
-        buf = head_buf.clone();
-        buf.split_at(HEAD_BYTES_SIZE + len);
+
+        self.head_offset += 1;
+        buf = self.get_buf().to_vec();
+        // buf.split_at(HEAD_BYTES_SIZE + len);
         buf
     }
 
