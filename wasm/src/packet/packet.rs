@@ -67,154 +67,169 @@ impl PacketHeader{
       }
    }
 
-   pub fn set_params<'a>(&'a mut self , key:PacketHeaderKey, data:usize){
-      match key {
-        PacketHeaderKey::OPCODE=> {
-            self.opcode = u8::from_usize(data).unwrap();
-        },
-        PacketHeaderKey::BLEN=>{
-            self.len= u8::from_usize(data).unwrap();
-        },
-        PacketHeaderKey::MAGIC=>{
-            self.magic= u16::from_usize(data).unwrap();
-        },
-        PacketHeaderKey::PARAM=>{
-            self.param= u8::from_usize(data).unwrap();
-        },
-        PacketHeaderKey::TIMESTAMP=>{
-            self.time_stamp= u32::from_usize(data).unwrap();
-        }
-      }
-   }
+//    pub fn set_params<'a>(&'a mut self , key:PacketHeaderKey, data:usize){
+//       match key {
+//         PacketHeaderKey::OPCODE=> {
+//             self.opcode = u8::from_usize(data).unwrap();
+//         },
+//         PacketHeaderKey::BLEN=>{
+//             self.len= u8::from_usize(data).unwrap();
+//         },
+//         PacketHeaderKey::MAGIC=>{
+//             self.magic= u16::from_usize(data).unwrap();
+//         },
+//         PacketHeaderKey::PARAM=>{
+//             self.param= u8::from_usize(data).unwrap();
+//         },
+//         PacketHeaderKey::TIMESTAMP=>{
+//             self.time_stamp= u32::from_usize(data).unwrap();
+//         }
+//       }
+//    }
 
-   pub fn get_params(&self,key:PacketHeaderKey)->usize{
-    match key {
-        PacketHeaderKey::OPCODE=> {
-            usize::from_u8(self.opcode).unwrap()
-        },
-        PacketHeaderKey::BLEN=>{
-            usize::from_u8(self.len).unwrap()
-        },
-        PacketHeaderKey::MAGIC=>{
-            usize::from_u16(self.magic).unwrap()
-        },
-        PacketHeaderKey::PARAM=>{
-            usize::from_u8(self.param).unwrap()
-        },
-        PacketHeaderKey::TIMESTAMP=>{
-            usize::from_u32(self.time_stamp).unwrap()
-        }
-      }
-   }
+//    pub fn get_params(&self,key:PacketHeaderKey)->usize{
+//     match key {
+//         PacketHeaderKey::OPCODE=> {
+//             usize::from_u8(self.opcode).unwrap()
+//         },
+//         PacketHeaderKey::BLEN=>{
+//             usize::from_u8(self.len).unwrap()
+//         },
+//         PacketHeaderKey::MAGIC=>{
+//             usize::from_u16(self.magic).unwrap()
+//         },
+//         PacketHeaderKey::PARAM=>{
+//             usize::from_u8(self.param).unwrap()
+//         },
+//         PacketHeaderKey::TIMESTAMP=>{
+//             usize::from_u32(self.time_stamp).unwrap()
+//         }
+//       }
+//    }
 
-   pub fn get_buf(&self) -> & Vec<u8> {
-       &self.buf
-   }
+//    pub fn get_buf(&self) -> & Vec<u8> {
+//        &self.buf
+//    }
 
-   pub fn set_buf<'a>(&'a mut self ,buffer:&Vec<u8>){
-       &self.buf.clear();
-       self.buf = buffer.clone()[..].to_vec();
-   }
+//    pub fn set_buf<'a>(&'a mut self ,buffer:&Vec<u8>){
+//        &self.buf.clear();
+//        self.buf = buffer.clone()[..].to_vec();
+//    }
 
-   pub fn update_offset(&mut self,offset:u8)-> u8{
-       self.offset += offset;
-       self.offset
-   }
+//    pub fn update_offset(&mut self,offset:u8)-> u8{
+//        self.offset += offset;
+//        self.offset
+//    }
 
-   pub fn pack<'a>(&'a mut self)-> &'a Vec<u8> {
-       self.clean_buf();
-       let mut vec_u8 = Vec::with_capacity(HEAD_BYTES_SIZE);
-       let true_cap = vec_u8.capacity();
-       unsafe {
-           vec_u8.set_len(true_cap);
-       };
-       let mut output= vec_u8.into_boxed_slice();
-       byteorder::NativeEndian::write_u16(&mut output[..2],self.magic);
-       self.offset+=2;
-       byteorder::NativeEndian::write_u32(&mut output[2..6],u32::from_u8(self.len).unwrap());
-       self.offset+=4;
-       byteorder::NativeEndian::write_u32(&mut output[6..10],u32::from_u8(self.opcode).unwrap());
-       self.offset+=4;
-       byteorder::NativeEndian::write_u32(&mut output[10..14],u32::from_u8(self.uuid).unwrap());
-       self.offset+=4;
-       byteorder::NativeEndian::write_u32(&mut output[14..18],u32::from_u8(self.param).unwrap());
-       self.offset+=4;
-       byteorder::NativeEndian::write_u64(&mut output[18..],u64::from_u32(self.time_stamp).unwrap());
-       self.offset+=8;
-       self.buf = output.as_ref().to_vec();
-       &self.buf
-   }
+//    pub fn pack<'a>(&'a mut self)-> &'a Vec<u8> {
+//        self.clean_buf();
+//        let mut vec_u8 = Vec::with_capacity(HEAD_BYTES_SIZE);
+//        let true_cap = vec_u8.capacity();
+//        unsafe {
+//            vec_u8.set_len(true_cap);
+//        };
+//        let mut output= vec_u8.into_boxed_slice();
+//        byteorder::NativeEndian::write_u16(&mut output[..2],self.magic);
+//        self.offset+=2;
+//        byteorder::NativeEndian::write_u32(&mut output[2..6],u32::from_u8(self.len).unwrap());
+//        self.offset+=4;
+//        byteorder::NativeEndian::write_u32(&mut output[6..10],u32::from_u8(self.opcode).unwrap());
+//        self.offset+=4;
+//        byteorder::NativeEndian::write_u32(&mut output[10..14],u32::from_u8(self.uuid).unwrap());
+//        self.offset+=4;
+//        byteorder::NativeEndian::write_u32(&mut output[14..18],u32::from_u8(self.param).unwrap());
+//        self.offset+=4;
+//        byteorder::NativeEndian::write_u64(&mut output[18..],u64::from_u32(self.time_stamp).unwrap());
+//        self.offset+=8;
+//        self.buf = output.as_ref().to_vec();
+//        &self.buf
+//    }
 
-   pub fn un_pack<'a>(&'a mut self,buffer:&mut [u8]) -> u8 {
-      let true_cap = buffer.len();
-      if true_cap < HEAD_BYTES_SIZE {
-          log!("Packet header length invalid.{:?}","error");
-          return 0;
-      }
-      let mut offset:u8 = 0;
-      self.magic = byteorder::NativeEndian::read_u16(&mut buffer[..2]);
-      offset += 2;
+//    pub fn un_pack<'a>(&'a mut self,buffer:&mut [u8]) -> u8 {
+//       let true_cap = buffer.len();
+//       if true_cap < HEAD_BYTES_SIZE {
+//           log!("Packet header length invalid.{:?}","error");
+//           return 0;
+//       }
+//       let mut offset:u8 = 0;
+//       self.magic = byteorder::NativeEndian::read_u16(&mut buffer[..2]);
+//       offset += 2;
 
-      self.len = u8::from_u32(byteorder::NativeEndian::read_u32(&mut buffer[2..6])).unwrap();
-      offset += 4;
+//       self.len = u8::from_u32(byteorder::NativeEndian::read_u32(&mut buffer[2..6])).unwrap();
+//       offset += 4;
   
-      self.opcode =  u8::from_u32(byteorder::NativeEndian::read_u32(&mut buffer[6..10])).unwrap();
-      offset += 4;
+//       self.opcode =  u8::from_u32(byteorder::NativeEndian::read_u32(&mut buffer[6..10])).unwrap();
+//       offset += 4;
   
-      // Do not read uuid
-      self.uuid = u8::from_u32(byteorder::NativeEndian::read_u32(&mut buffer[10..14])).unwrap();
-      offset += 4;
+//       // Do not read uuid
+//       self.uuid = u8::from_u32(byteorder::NativeEndian::read_u32(&mut buffer[10..14])).unwrap();
+//       offset += 4;
   
-      self.param = u8::from_u32(byteorder::NativeEndian::read_u32(&mut buffer[14..18])).unwrap();
-      offset += 4;
+//       self.param = u8::from_u32(byteorder::NativeEndian::read_u32(&mut buffer[14..18])).unwrap();
+//       offset += 4;
   
-      self.time_stamp = byteorder::NativeEndian::read_u32(&mut buffer[18..]);
-      offset += 8;
+//       self.time_stamp = byteorder::NativeEndian::read_u32(&mut buffer[18..]);
+//       offset += 8;
   
-      offset
-   }
+//       offset
+//    }
 
-   pub fn clean_buf<'a>(&'a mut self){
-      self.offset = 0;
-      self.buf.clear();
-   }
+//    pub fn clean_buf<'a>(&'a mut self){
+//       self.offset = 0;
+//       self.buf.clear();
+//    }
 }
 
 
 // const OPCODE_REGXP = Regex::new(r"/^_(OP_.+)/").unwrap();
 pub struct Packet {
-    header : PacketHeader,
-    length : u8,
-    opcode : u8,
+    // ==== commn
+    opcode:u8,
+    // ==== packetheader
+    head_len :usize,
+    body_len:u8,
+    head_param:u8,
+    head_uuid:u8,
+    head_time_stamp:u32,
+    head_magic:u16,
+    head_offset:u8,
+    head_buf:Vec<u8>,
+    // ==== packet
     buf : Vec<u8>,
 }
 
 impl Packet {
     pub fn new() -> Self {
         Packet { 
-            header: PacketHeader::new(),
-            length: 0,
-            opcode: 0,
+            head_len : HEAD_BYTES_SIZE,
+            body_len : 0,
+            opcode : 0,
+            head_param : 0,
+            head_uuid:0,
+            head_time_stamp : 0,
+            head_magic : PACKET_MAGIC_D,
+            head_offset:0,
+            head_buf : vec![],
             buf: vec![]
         }
     }
     // ========================== packetHead
-    pub fn set_params<'a>(&'a mut self , key:PacketHeaderKey, data:usize){
+    pub fn set_params(&mut self , key:PacketHeaderKey, data:usize){
         match key {
           PacketHeaderKey::OPCODE=> {
               self.opcode = u8::from_usize(data).unwrap();
           },
           PacketHeaderKey::BLEN=>{
-              self.len= u8::from_usize(data).unwrap();
+              self.body_len= u8::from_usize(data).unwrap();
           },
           PacketHeaderKey::MAGIC=>{
-              self.magic= u16::from_usize(data).unwrap();
+              self.head_magic= u16::from_usize(data).unwrap();
           },
           PacketHeaderKey::PARAM=>{
-              self.param= u8::from_usize(data).unwrap();
+              self.head_param= u8::from_usize(data).unwrap();
           },
           PacketHeaderKey::TIMESTAMP=>{
-              self.time_stamp= u32::from_usize(data).unwrap();
+              self.head_time_stamp= u32::from_usize(data).unwrap();
           }
         }
      }
@@ -225,32 +240,32 @@ impl Packet {
               usize::from_u8(self.opcode).unwrap()
           },
           PacketHeaderKey::BLEN=>{
-              usize::from_u8(self.len).unwrap()
+              usize::from_u8(self.body_len).unwrap()
           },
           PacketHeaderKey::MAGIC=>{
-              usize::from_u16(self.magic).unwrap()
+              usize::from_u16(self.head_magic).unwrap()
           },
           PacketHeaderKey::PARAM=>{
-              usize::from_u8(self.param).unwrap()
+              usize::from_u8(self.head_param).unwrap()
           },
           PacketHeaderKey::TIMESTAMP=>{
-              usize::from_u32(self.time_stamp).unwrap()
+              usize::from_u32(self.head_time_stamp).unwrap()
           }
         }
      }
   
-     pub fn get_buf(&self) -> & Vec<u8> {
+     pub fn get_buf(&mut self) -> &Vec<u8> {
          &self.buf
      }
   
      pub fn set_buf<'a>(&'a mut self ,buffer:&Vec<u8>){
-         &self.buf.clear();
+        //  self.buf.clear();
          self.buf = buffer.clone()[..].to_vec();
      }
   
-     pub fn update_offset(&mut self,offset:u8)-> u8{
-         self.offset += offset;
-         self.offset
+     pub fn update_offset<'a>(&'a mut self,offset:u8)-> &'a u8{
+         self.head_offset += offset;
+         &self.head_offset
      }
   
      pub fn pack<'a>(&'a mut self)-> &'a Vec<u8> {
@@ -261,70 +276,67 @@ impl Packet {
              vec_u8.set_len(true_cap);
          };
          let mut output= vec_u8.into_boxed_slice();
-         byteorder::NativeEndian::write_u16(&mut output[..2],self.magic);
-         self.offset+=2;
-         byteorder::NativeEndian::write_u32(&mut output[2..6],u32::from_u8(self.len).unwrap());
-         self.offset+=4;
+         byteorder::NativeEndian::write_u16(&mut output[..2],self.head_magic);
+         self.head_offset+=2;
+         byteorder::NativeEndian::write_u32(&mut output[2..6],u32::from_u8(self.body_len).unwrap());
+         self.head_offset+=4;
          byteorder::NativeEndian::write_u32(&mut output[6..10],u32::from_u8(self.opcode).unwrap());
-         self.offset+=4;
-         byteorder::NativeEndian::write_u32(&mut output[10..14],u32::from_u8(self.uuid).unwrap());
-         self.offset+=4;
-         byteorder::NativeEndian::write_u32(&mut output[14..18],u32::from_u8(self.param).unwrap());
-         self.offset+=4;
-         byteorder::NativeEndian::write_u64(&mut output[18..],u64::from_u32(self.time_stamp).unwrap());
-         self.offset+=8;
+         self.head_offset+=4;
+         byteorder::NativeEndian::write_u32(&mut output[10..14],u32::from_u8(self.head_uuid).unwrap());
+         self.head_offset+=4;
+         byteorder::NativeEndian::write_u32(&mut output[14..18],u32::from_u8(self.head_param).unwrap());
+         self.head_offset+=4;
+         byteorder::NativeEndian::write_u64(&mut output[18..],u64::from_u32(self.head_time_stamp).unwrap());
+         self.head_offset+=8;
          self.buf = output.as_ref().to_vec();
          &self.buf
      }
   
-     pub fn un_pack<'a>(&'a mut self,buffer:&mut [u8]) -> u8 {
+     pub fn un_pack(& mut self,buffer:&mut [u8]) -> u8 {
         let true_cap = buffer.len();
         if true_cap < HEAD_BYTES_SIZE {
             log!("Packet header length invalid.{:?}","error");
             return 0;
         }
         let mut offset:u8 = 0;
-        self.magic = byteorder::NativeEndian::read_u16(&mut buffer[..2]);
+        self.head_magic = byteorder::NativeEndian::read_u16(&mut buffer[..2]);
         offset += 2;
   
-        self.len = u8::from_u32(byteorder::NativeEndian::read_u32(&mut buffer[2..6])).unwrap();
+        self.body_len = u8::from_u32(byteorder::NativeEndian::read_u32(&mut buffer[2..6])).unwrap();
         offset += 4;
     
         self.opcode =  u8::from_u32(byteorder::NativeEndian::read_u32(&mut buffer[6..10])).unwrap();
         offset += 4;
     
         // Do not read uuid
-        self.uuid = u8::from_u32(byteorder::NativeEndian::read_u32(&mut buffer[10..14])).unwrap();
+        self.head_uuid = u8::from_u32(byteorder::NativeEndian::read_u32(&mut buffer[10..14])).unwrap();
         offset += 4;
     
-        self.param = u8::from_u32(byteorder::NativeEndian::read_u32(&mut buffer[14..18])).unwrap();
+        self.head_param = u8::from_u32(byteorder::NativeEndian::read_u32(&mut buffer[14..18])).unwrap();
         offset += 4;
     
-        self.time_stamp = byteorder::NativeEndian::read_u32(&mut buffer[18..]);
+        self.head_time_stamp = byteorder::NativeEndian::read_u32(&mut buffer[18..]);
         offset += 8;
     
         offset
      }
   
-     pub fn clean_buf<'a>(&'a mut self){
-        self.offset = 0;
-        self.buf.clear();
+     pub fn clean_buf(&mut self){
+        self.head_offset = 0;
+        self.head_buf.clear();
      }
     // ========================== packet
     pub fn serialization(&mut self) -> Vec<u8>{
         let buf:Vec<u8> ;
         self.mkHead();
-        let head_buf = self.header.get_buf();
+        let head_buf = self.get_buf();
         let mut head_buf_available = head_buf.clone();
         let len = cmp::min(head_buf_available[HEAD_BYTES_SIZE..].len(), self.buf.len());
         head_buf_available[HEAD_BYTES_SIZE..][..len].copy_from_slice(&self.buf[..len]);
-        // self.header.update_offset(u8::from_usize(len).unwrap());
-        let header = PacketHeader {
-            offset:u8::from_usize(len).unwrap(),
-            ..self.header
-        };
-        buf = head_buf.clone();
-        buf.split_at(HEAD_BYTES_SIZE + len);
+
+        self.head_offset += 1;
+        buf = self.get_buf().to_vec();
+        // buf.split_at(HEAD_BYTES_SIZE + len);
         buf
     }
 
@@ -334,8 +346,8 @@ impl Packet {
             return false;
         }
       
-        let pos = usize::from_u8(self.header.un_pack(buf)).unwrap();
-        let content_len = self.header.get_params(PacketHeaderKey::BLEN);
+        let pos = usize::from_u8(self.un_pack(buf)).unwrap();
+        let content_len = self.get_params(PacketHeaderKey::BLEN);
         unsafe {
             self.buf.set_len(content_len);
         };
@@ -343,29 +355,26 @@ impl Packet {
         false
     }
 
-    pub fn peek_body_length(&self , buf:&mut [u8]) -> usize{
+    pub fn peek_body_length(&mut self , buf:&mut [u8]) -> usize{
         let mut body_len = usize::from_i8(-1).unwrap();
         if buf.len() < HEAD_BYTES_SIZE {
             return body_len
         }
         
-        self.header.un_pack(buf);
-        body_len = self.header.get_params(PacketHeaderKey::BLEN);
+        self.un_pack(buf);
+        body_len = self.get_params(PacketHeaderKey::BLEN);
         body_len
     }
 
-    pub fn init(&self, opcode: usize, param:usize) {
-        // self.header = PacketHeader::new();
-        self.header.set_params(PacketHeaderKey::OPCODE, opcode);
-        self.header.set_params(PacketHeaderKey::PARAM, param);
+    pub fn init(&mut self, opcode: usize, param:usize) {
+        self.set_params(PacketHeaderKey::OPCODE, opcode);
+        self.set_params(PacketHeaderKey::PARAM, param);
     }
 
-    fn mkHead(&self) -> PacketHeader{
-        self.header.set_params(PacketHeaderKey::BLEN, self.buf.len());
-        let head_buf = self.header.pack();
-        //let head_len = self.header.get_buf().len();
-        self.header.set_buf(&head_buf);
-        self.header
+    fn mkHead(&mut self){
+        self.set_params(PacketHeaderKey::BLEN, self.buf.len());
+        let head_buf = self.pack();
+        self.buf = head_buf.clone()[..].to_vec();
     }
 }
 
