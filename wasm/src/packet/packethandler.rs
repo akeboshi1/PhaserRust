@@ -17,3 +17,20 @@ impl PacketListener for PacketHandler{
         
     }
 }
+
+
+// 密封特性
+pub(crate) mod private {
+
+    #[doc(hidden)]
+    pub trait FooPrivate<Arg> {
+        fn foo(&self, arg: Arg);
+    }
+
+}
+
+pub trait Foo<Arg>: private::FooPrivate<Arg> {
+
+    /* other public methods */
+
+}
