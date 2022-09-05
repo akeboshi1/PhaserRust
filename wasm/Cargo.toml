@@ -1,8 +1,8 @@
 [package]
-name = "wasm"
+name = "net-socket-packet"
 version = "0.1.0"
 edition = "2021"
-description = "A wasm project for GameCore"
+description = "net-socket-packet"
 license = "MIT/Apache-2.0"
 [package.metadata.wasm-pack.profile.release]
 wasm-opt = ["-Oz", "--enable-mutable-globals"]
