@@ -1,8 +1,8 @@
 [package]
-name = "wasm"
+name = "net-socket-packet"
 version = "0.1.0"
 edition = "2021"
-description = "A wasm project for GameCore"
+description = "net-socket-packet"
 license = "MIT/Apache-2.0"
 [package.metadata.wasm-pack.profile.release]
 wasm-opt = ["-Oz", "--enable-mutable-globals"]
@@ -10,8 +10,8 @@ wasm-opt = ["-Oz", "--enable-mutable-globals"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-[[bin]]
-name = "wasm"
+[lib]
+path = "./src/lib.rs"
 
 [dependencies]
 wasm-bindgen = {version ="0.2.64",features = ["serde-serialize"]}
@@ -23,6 +23,8 @@ serde = { version = "1.0.80", features = ["derive"] }
 num-traits = "0.2"
 num-derive = "0.2"
 buffer = "0.1.9"
+byteorder = "1.4.3"
+buf_redux = "0.8.4"
 [dependencies.web-sys]
 version = "^0.3.59"
 features = [
