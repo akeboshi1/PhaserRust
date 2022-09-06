@@ -6,8 +6,10 @@ use byteorder::ByteOrder;
 use js_sys::RegExp;
 use num_derive::FromPrimitive;    
 use num_traits::FromPrimitive;
+
+use super::protoclass::{ProtoClass, AsAny};
 // use regex::Regex;
-const protoclos: Vec<Packet> =  Vec::new();
+const protoclos: Vec<ProtoClass> =  Vec::new();
 // const OPCODE_REGXP:js_sys::RegExp = RegExp::new(r"\^_(OP_.+)", &"i");
 //RegExp::new(r"\^_(OP_.+)").unwrap();
 const S : u16 = 83;// utils::stringutil::get_char_code(&"S"); 83
@@ -247,13 +249,18 @@ impl Packet {
         self.buf = head_buf.clone()[..].to_vec();
     }
 
-    fn reflection(&self) {
+    fn reflection(&mut self) {
        let op:u8 = self.opcode;
        let OPCODE_REGXP: RegExp = RegExp::new(r"\^_(OP_.+)", "i");
        if op != 0 {
-         for proto in &protoclos {
+         for proto in protoclos {
+            let me = proto.as_any();
             let str = &self.opcode_str[..];
-            let class_reg = OPCODE_REGXP.exec(str);
+            let class_reg:js_sys::Array = OPCODE_REGXP.exec(str).unwrap();
+            if class_reg.is_undefined() == false && class_reg.length()>0 {
+                let class_T = class_reg.get(1);
+                proto.as_any();
+            }
             //if class_reg !=None && class_reg.
          }
        }
