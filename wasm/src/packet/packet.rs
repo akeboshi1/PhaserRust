@@ -1,11 +1,17 @@
 extern crate buf_redux;
 extern crate byteorder; // 1.2.7
 use crate::log;
-use std::cmp;
+use std::{cmp, string};
 use byteorder::ByteOrder;
+use js_sys::RegExp;
 use num_derive::FromPrimitive;    
 use num_traits::FromPrimitive;
 
+use super::protoclass::{ProtoClass, AsAny};
+// use regex::Regex;
+const protoclos: Vec<ProtoClass> =  Vec::new();
+// const OPCODE_REGXP:js_sys::RegExp = RegExp::new(r"\^_(OP_.+)", &"i");
+//RegExp::new(r"\^_(OP_.+)").unwrap();
 const S : u16 = 83;// utils::stringutil::get_char_code(&"S"); 83
 const D : u16 = 68;// utils::stringutil::get_char_code(&"D"); 68
 // const C : u8 = 67;// utils::stringutil::get_char_code(&"C"); 67
@@ -55,6 +61,8 @@ pub struct Packet {
     head_buf:Vec<u8>,
     // ==== packet
     buf : Vec<u8>,
+    // ==== pb_packet
+    opcode_str: String,
 }
 
 impl Packet {
@@ -69,7 +77,8 @@ impl Packet {
             head_magic : PACKET_MAGIC_D,
             head_offset:0,
             head_buf : vec![],
-            buf: vec![]
+            buf: vec![],
+            opcode_str: String::from(""),
         }
     }
     // ========================== packetHead
@@ -111,6 +120,10 @@ impl Packet {
               usize::from_u32(self.head_time_stamp).unwrap()
           }
         }
+     }
+
+     pub fn get_opcode(&self)->u8{
+        self.opcode 
      }
   
      pub fn get_buf(&mut self) -> &Vec<u8> {
@@ -234,5 +247,22 @@ impl Packet {
         self.set_params(PacketHeaderKey::BLEN, self.buf.len());
         let head_buf = self.pack();
         self.buf = head_buf.clone()[..].to_vec();
+    }
+
+    fn reflection(&mut self) {
+       let op:u8 = self.opcode;
+       let OPCODE_REGXP: RegExp = RegExp::new(r"\^_(OP_.+)", "i");
+       if op != 0 {
+         for proto in protoclos {
+            let me = proto.as_any();
+            let str = &self.opcode_str[..];
+            let class_reg:js_sys::Array = OPCODE_REGXP.exec(str).unwrap();
+            if class_reg.is_undefined() == false && class_reg.length()>0 {
+                let class_T = class_reg.get(1);
+                proto.as_any();
+            }
+            //if class_reg !=None && class_reg.
+         }
+       }
     }
 }
