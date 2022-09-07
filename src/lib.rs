@@ -5,10 +5,23 @@ extern crate wasm_bindgen;
 extern crate serde_json;
 use js_sys::{Uint8Array, Number};
 use rs::rustproto::op_def;
+use rs::rustproto::protoclass::ProtoClass;
+use crate::rs::rustproto::protoclass::AsAny;
 use serde::{Serialize, Deserialize};
 use wasm_bindgen::prelude::*;
 use pktwasm;
 mod rs;
+
+// const protoclos: Vec<'static ProtoClass> = vec![];
+#[wasm_bindgen]
+pub fn addProtocol(proto:JsValue) {
+    log!("add protocol====>{:?}",proto);
+    let obj:ProtoClass = proto.into_serde().unwrap();
+    log!("serde{:?}",obj.as_any());
+        // 
+    // let tmp = JsValue::from(proto) as ProtoClass;
+    // protoclos.push(tmp);
+}
 
 #[wasm_bindgen(module = "/src/js/greet.js")]
 extern "C"{
@@ -69,6 +82,7 @@ pub fn wasm_add(num1:i32,num2:i32)-> i32 {
     output
 }
 
+use std::any::Any;
 // ================= rust future
 use std::future::Future;
 fn foo() ->impl Future<Output = u8> {
