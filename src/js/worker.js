@@ -5,6 +5,7 @@ onmessage = function (m) {
         console.log(pkt);
     });
     import("../../pkg/wasm").then(module => {
+        module.testproto();
         module.action("wasm");
         module.test().then((data) => {
             postMessage(data);

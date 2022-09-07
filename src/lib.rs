@@ -4,6 +4,7 @@
 extern crate wasm_bindgen;
 extern crate serde_json;
 use js_sys::{Uint8Array, Number};
+use rs::rustproto::op_def;
 use serde::{Serialize, Deserialize};
 use wasm_bindgen::prelude::*;
 use pktwasm;
@@ -428,17 +429,39 @@ pub fn wasmSerde1(value:&JsValue) -> JsValue{
    jsStr
 }
 
-#[derive(Debug)]
-enum Foo {
-    Value(i32),
-    Nothing,
+
+// #[wasm_bindgen]
+// pub struct TestProto {
+//     opcode:String
+// }
+
+// impl TestProto {
+//     pub fn show(){
+//         let opCodeEnum = op
+//         let opCode = op_def::Opcode::as_str_name(self);
+//         log(opCode)
+//     }
+// }
+
+#[wasm_bindgen]
+pub fn testproto() {
+    let opCodeEnum = op_def::Opcode::OpUnknown;
+    let opCode = op_def::Opcode::as_str_name(&opCodeEnum);
+    let op_def_nodetype = op_def::NodeType::TerrainNodeType;
+    log!("testProto====>{:?}",opCode)
 }
 
-fn main() {
-    let bar = [1, 2, 3];
-    let foos = bar.iter().map(|&x| Foo::Value(x)).collect::<Vec<Foo>>();
-    println!("{:?}", foos);
-}
+// #[derive(Debug)]
+// enum Foo {
+//     Value(i32),
+//     Nothing,
+// }
+
+// fn main() {
+//     let bar = [1, 2, 3];
+//     let foos = bar.iter().map(|&x| Foo::Value(x)).collect::<Vec<Foo>>();
+//     println!("{:?}", foos);
+// }
 
 
 

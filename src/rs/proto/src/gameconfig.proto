@@ -1,0 +1,418 @@
+syntax = "proto2";
+import "def.proto";
+import "gameconfignew.proto";
+package op_gameconfig;
+
+// TODO auto gen Message by Header file
+// can not use the same name of message, because proto define unique error
+enum OPCODE {
+    _OP_UNKNOWN = 0x00000000;
+    //_OP_WORLD_REQ_GALAXY_EXAMPLE                   = 0x00120000;
+}
+
+// Match OPCODE enum and move first "_" 
+//message OP_WORLD_REQ_GALAXY_EXAMPLE
+//{
+//    required int32  port=1;
+//    optional string name=2;
+//}
+
+
+// TODO 警告!!! 本文件所有声明都已弃用,需要被删除
+
+
+
+message Display
+{
+    optional string data_path = 1;
+    optional string texture_path = 2;
+}
+
+/////////////////////////////////////////////////
+///// Element
+////////////////////////////////////////////////
+
+message Attribute                // 存储用户自定义属性
+{
+    required string name=1;
+    optional int32  intVal=2;
+    optional string strVal=3;
+    optional bool  boolVal=4;
+}
+
+message FuncArg
+{
+    required string argName = 1;
+    oneof argValue_oneOf {
+        bool boolValue = 2;
+        double numberValue = 3;
+        string strValue = 4;
+    }
+}
+
+message Func
+{
+    required string fileName = 1;
+    required string funcName = 2;
+    optional string version = 3;
+    repeated FuncArg funcArgs = 4;
+}
+
+message ItemEvent
+{
+    optional Func onItemCreate = 1;
+    optional Func onItemDestroy = 2;
+    optional Func onItemAttributeChange = 3;
+}
+
+message ElementEvent
+{
+    optional Func onElementCreate = 1;
+    optional Func onElementDestroy = 2;
+    optional Func onElementHit = 3;
+    optional Func onElementMove = 4;
+    optional Func onElementAttributeChange = 5;
+    optional Func onElementLeave = 6;
+    optional Func onElementStop = 7;
+}
+
+message CharacterEvent
+{
+    optional Func onCharacterHit = 1;
+    optional Func onCharacterAttributeChange = 2;
+    optional Func onCharacterMove = 3;
+    optional Func onCharacterStop = 4;
+}
+
+message TerrainEvent
+{
+    optional Func onTerrainDestroy = 1;
+    optional Func onTerrainOverFunc = 2;
+    optional Func onTerrainLeaveFunc = 3;
+    optional Func onTerrainSchedule = 4;
+    optional Func onTerrainCreate = 5;
+}
+
+/*
+message ObjectEvent
+{
+    optional Func onHitFunc                     = 1; // pi_onHitFunc(pi_eventType, pi_eventID)
+    optional Func onDamageFunc                  = 2; // pi_eventType, pi_eventDirection
+    optional Func onDestroy                     = 3;
+    optional Func onMoveFunc                    = 4; // pi_eventDirection
+    optional Func onOverFunc                    = 5;
+    optional Func onLeaveFunc                   = 6;
+    optional Func onSchedule                    = 7; // 计划任务触发
+    optional Func onSceneAttributeChange        = 8; // 自定义属性变化 pi_AttributeName, pi_AttributeValueType, pi_AttributeValueBefore, pi_AttributeValueAfter
+    optional Func onStyleChange                 = 9;
+    optional Func onDisappear                   = 10;
+    optional Func onItemAttributeChange         = 11; //item
+    optional Func onCharacterAttributeChange    = 12; //Character
+    optional Func onElementAttributeChange      = 13; //element
+    optional Func onElementHit              = 14; // element hit
+    optional Func onCharacterHitFunc            = 15; // Character hit
+    optional Func onMouseClick                  = 20;
+    optional Func onItemCreate                  = 21;
+    optional Func onItemDestroy                 = 22;
+    //    optional string onMouseHover             = 21 [default = ""]；
+    //    optional string onKeyboard               = 30 [default = ""]; onScene trigger
+}
+*/
+/////////////////////////////////////////////////
+///// ElementType
+////////////////////////////////////////////////
+
+
+message Element_type
+{
+    required string type             = 1;
+    required string name            = 2;
+    optional string des             = 3;
+    repeated op_gameconfig_01.AnimationData animations   = 10;
+    optional ElementEvent element_event = 11; //required ObjectEvent object_event     = 11;
+    repeated Attribute attributes    = 12;
+    optional string animation_name = 13;
+    optional Display display         = 14;
+}
+
+
+message Element
+{
+    required int32 id                = 1;
+    required string type              = 2;
+    required int32 dir               = 3; // 美术资源方向
+    required float x                 = 4;
+    required float y                 = 5;
+    required float z                 = 6 [default = 0];
+    optional string name            = 7;
+    optional string des             = 8;
+    repeated op_gameconfig_01.AnimationData animations   = 15;
+    optional ElementEvent element_event = 16; //optional ObjectEvent object_event               = 16;
+    repeated Attribute attributes    = 17;
+    optional string animation_name = 18;
+    optional Display display         = 14;
+}
+
+
+
+
+/////////////////////////////////////////////
+////  ItemType
+//////////////////////////////////////////
+
+message Price
+{
+    required float price = 1;   // 金额
+    required op_def.CoinType coin_type = 2; // 货币类型
+    optional int32 display_precision = 3; // 保留多少位小数
+}
+
+
+message ItemType
+{
+    required string type            = 1;
+    required string name            = 2;
+    optional string des             = 3;
+    repeated op_gameconfig_01.AnimationData animations   = 7;
+    optional ItemEvent item_event   = 8; //required ObjectEvent object_event              = 8;
+    repeated Attribute attributes   = 9;
+    required int32 maxcount         = 10;
+    optional Display display         = 14;
+    repeated Price price = 15;
+    optional string shop_des = 16;
+}
+
+
+message Item
+{
+    required int32 id                = 1;  // ID
+    required string type              = 2;  // 道具类型
+    required int32 count             = 3 [default = 1]; //道具数量
+    optional string name             = 4;  // 道具名称
+    optional string des              = 5;  // 道具描述
+    repeated op_gameconfig_01.AnimationData animations    = 9;  // 道具动画
+    optional ItemEvent item_event    = 10; //optional ObjectEvent object_event               = 10;  // 道具触发事件， 游戏端无需考虑，编辑器需要给出lua脚本的位置
+    repeated Attribute attributes    = 11;  // 道具属性， 游戏端无需考虑，编辑器需要给出lua脚本的位置
+    optional int32 maxcount          = 12;  // 道具最大可对叠数量
+    optional string animation_name   = 13;
+    optional Display display         = 14;
+    repeated Price price = 15;
+    optional string shop_des = 16;
+}
+
+message ShopItem {
+    required string id = 1;
+    required string item_id = 2;
+    required string category = 3;
+    required string subcategory = 4;
+    required string currency = 5;
+    required int32 price = 6;
+}
+
+
+
+////////////////////////////////////////////
+//////   Layers
+///////////////////////////////////////
+
+message TerrainType
+{
+    required string type                 = 2;
+    required string name                 = 3;
+    optional string des                  = 4;
+    repeated op_gameconfig_01.AnimationData animations        = 5;
+    required string animation_name       = 6;
+    optional TerrainEvent terrain_event  = 7;
+    required op_def.TerrainAnimationType mode   = 8;
+    optional Display display         = 14;
+}
+
+message Terrain
+{
+    optional int32 id                = 1;
+    required string type             = 2;
+    required string animation_name   = 6;
+    optional string name             = 3;
+    optional string des              = 4;
+    repeated op_gameconfig_01.AnimationData animations    = 5;
+    optional TerrainEvent terrain_event  = 7;
+    optional op_def.TerrainAnimationType mode   = 8;
+    optional int32 x                 = 9;
+    optional int32 y                 = 10;
+    optional int32 z                 = 11;
+    optional Display display         = 14;
+}
+
+
+message Shop
+{
+    required int32 id = 1;
+    repeated Item items      = 2;
+}
+
+///////////////////////////////////////////////////////
+/////   Scene
+/////////////////////////////////////////////////////
+
+message SceneEvent
+{
+    optional Func onSceneCreate  = 1;
+    optional Func onSceneRun     = 2;
+    optional Func onSceneDestroy = 3;
+    optional Func onSceneEnter   = 4;
+    optional Func onSceneLeave   = 5;
+}
+
+
+message Scene
+{
+    required int32    id                 = 1;
+    required string   name               = 2 [default=""];
+    required float    cols               = 3;
+    required float    rows               = 4;
+    required int32    tile_width         = 5;
+    required int32    tile_height        = 6;
+    optional float    z_start            = 7 [default = 0];
+    optional float    z_end              = 8 [default = 0];
+    repeated Element  elements           = 9;
+    repeated Terrain terrains            = 10;
+    optional SceneEvent  event           = 11;
+}
+
+
+//////////////////////////
+///  Avatar
+////////////////////////
+
+message AvatarBackbone
+{
+    required string id = 1;
+
+    repeated op_gameconfig_01.AnimationData animations   = 7;
+    optional string animation_name = 8;
+}
+
+
+message Avatar
+{
+    required string id = 1;
+    repeated int32 dirable = 80; // avatar 美术资源可用方向， 人物一般固定为[1,3,5,7] 四个方向
+
+    optional string head_base_id = 2;
+    optional string head_hair_id = 3;
+    optional string head_eyes_id = 4;
+    optional string head_hair_back_id = 5;
+    optional string head_mous_id = 6;
+    optional string head_hats_id = 7;
+    optional string head_mask_id = 8;
+    optional string head_spec_id = 9;
+    optional string head_face_id = 10;
+
+    optional string body_base_id = 11;
+    optional string body_cost_id = 12;
+    optional string body_cost_dres_id = 13;
+    optional string body_tail_id = 14;
+    optional string body_wing_id = 15;
+    optional string body_spec_id = 16;
+    
+    optional string farm_base_id = 21;
+    optional string farm_cost_id = 22;
+    optional string farm_shld_id = 23;
+    optional string farm_weap_id = 24;
+    optional string farm_spec_id = 25;
+
+    optional string barm_base_id = 31;
+    optional string barm_cost_id = 32;
+    optional string barm_shld_id = 33;
+    optional string barm_weap_id = 34;
+    optional string barm_spec_id = 35;
+
+    optional string fleg_base_id = 41;
+    optional string fleg_cost_id = 42;
+    optional string fleg_spec_id = 43;
+
+    optional string bleg_base_id = 51;
+    optional string bleg_cost_id = 52;
+    optional string bleg_spec_id = 53;
+}
+
+
+////////////////////////////////////////
+////  Slot
+////////////////////////////////////////
+
+message Slot
+{
+    optional string bond_attr_curkey = 1;
+    required string bond_attr_maxkey = 2;
+    required string color    = 3;
+    required string bond_name    = 4;
+    optional bool public    = 5 [default=false];
+}
+
+
+////////////////////////////////////////////////
+//// Game
+///////////////////////////////////////////////
+
+message Package
+{
+    required int32 max_index = 1;
+    repeated Item items      = 2;
+    required int32 id = 3;
+}
+
+message Character
+{
+    required int32  id                  = 1;
+    required string name                = 2;
+    required int32  max_num             = 3 [default = 20];    //  类型最大人数
+    required string camp                = 4;
+    required Avatar avatar              = 5;
+    repeated Attribute attributes       = 6;
+    repeated Package package            = 7;
+    optional int32 scene_id             = 8;
+    optional int32 x                    = 9;
+    optional int32 y                    = 10;
+    optional int32 z                    = 11;
+    optional CharacterEvent character_event = 12;  //required ObjectEvent object_event   = 12;
+    required int32 avatar_dir = 13; // 美术资源方向 与人物初始方向不同， 人物一般固定为[1,3,5,7] 四个方向中的一个
+    repeated Slot slots                 = 14;
+    optional Display editor_display     = 15;
+    repeated op_gameconfig_01.AnimationData editor_animations   = 16;
+    optional string editor_animation_name = 17;
+    repeated Shop shops                    = 18;
+}
+
+message GameEvent
+{
+    optional Func onGameCreate  = 1;
+    optional Func onGameRun     = 2;
+    optional Func onGameDestroy = 3;
+    optional Func onSelectCharacter = 4;
+    optional Func onGameEnter   = 5;
+    optional Func onGameLeave   = 6;
+
+    optional Func onRightMouseDown = 7;
+    optional Func onRightMouseUp   = 8;
+    optional Func onLeftMouseDown  = 9;
+    optional Func onLeftMouseUp    = 10;
+    optional Func onMouseOut       = 11;
+    optional Func onMouseOver      = 12;
+}
+
+
+message Game
+{
+    required string game_id           = 1;
+    required string name              = 2 [default=""];
+    repeated Scene scenes             = 5;
+    repeated Character  characters    = 6;    // 类型
+    repeated string resource_root     = 7;
+    repeated TerrainType terrain_Types       = 8;
+    repeated Element_type element_Types      = 9;
+    repeated ItemType item_Types             = 10;
+    optional GameEvent game_event            = 11;
+    repeated AvatarBackbone avatarBackbone   = 12; // 总是给全量？
+    repeated Attribute attributes       = 13;
+}
