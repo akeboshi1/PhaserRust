@@ -4,7 +4,7 @@
 extern crate wasm_bindgen;
 extern crate serde_json;
 use js_sys::{Uint8Array, Number};
-use rs::opdef::op_def;
+use rs::rustproto::op_def;
 use serde::{Serialize, Deserialize};
 use wasm_bindgen::prelude::*;
 use pktwasm;
@@ -447,6 +447,7 @@ pub fn wasmSerde1(value:&JsValue) -> JsValue{
 pub fn testproto() {
     let opCodeEnum = op_def::Opcode::OpUnknown;
     let opCode = op_def::Opcode::as_str_name(&opCodeEnum);
+    let op_def_nodetype = op_def::NodeType::TerrainNodeType;
     log!("testProto====>{:?}",opCode)
 }
 
