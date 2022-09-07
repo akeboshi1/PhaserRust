@@ -30,7 +30,10 @@
     "webpack-dev-server": "^4.3.1"
   },
   "dependencies": {
+    "@PixelPai/net-socket-packet": "git+ssh://git@code.apowo.com:PixelPai/net-socket-packet.git",
+    "git": "^0.1.5",
     "phaser": "^3.55.2",
+    "pixelpai_proto": "git+ssh://git@code.apowo.com:PixelPai/pixelpai_proto.git#typescript",
     "pkt_wasm": "^0.1.0",
     "rimraf": "^3.0.2",
     "webworker-rpc": "git+ssh://git@code.apowo.com/opensource/webworker-rpc"
