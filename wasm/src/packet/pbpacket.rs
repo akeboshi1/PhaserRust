@@ -2,7 +2,7 @@ use js_sys::ArrayBuffer;
 use num_traits::FromPrimitive;
 use crate::log;
 
-use super::packet::HEAD_BYTES_SIZE;
+use super::packetHeader::HEAD_BYTES_SIZE;
 
 pub struct PBPacket{
 
@@ -21,8 +21,9 @@ impl PBTrait for PBPacket{
     }
 
     fn set_up_from_arraybuffer(&self,data:ArrayBuffer) {
+        let head_bytes_size = usize::from_u32(HEAD_BYTES_SIZE).unwrap();
         let byte_len = usize::from_u32(data.byte_length()).unwrap();
-        if byte_len < HEAD_BYTES_SIZE {
+        if byte_len < head_bytes_size {
             log!("Packet is smaller than header size. {:?}","error");
             return;
         }
