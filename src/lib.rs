@@ -462,7 +462,33 @@ pub fn testproto() {
     let opCodeEnum = op_def::Opcode::OpUnknown;
     let opCode = op_def::Opcode::as_str_name(&opCodeEnum);
     let op_def_nodetype = op_def::NodeType::TerrainNodeType;
+    let mut test2 = test2::new();
+    test2.changeTest1();
     log!("testProto====>{:?}",opCode)
+}
+
+pub struct test1 {
+    id:u8,
+}
+
+pub struct test2{
+    test:test1,
+    id:u8
+}
+
+impl test2{
+    pub fn new()->Self{
+        test2 {
+            id : 2,
+            test : test1 {
+               id :2   
+            }
+        }
+    }
+    pub fn changeTest1(&mut self){
+        self.test.id = 3;
+        log!("{:?}",self.test.id);
+    }
 }
 
 // #[derive(Debug)]

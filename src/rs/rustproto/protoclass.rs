@@ -6,7 +6,7 @@ pub trait AsAny: Any {
 
 #[derive(Serialize, Deserialize,Debug)]
 pub struct ProtoClass{
-    //opcode:u8,
+    // opcode:u8,
 }
 
 
