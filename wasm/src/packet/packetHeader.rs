@@ -12,8 +12,8 @@ use crate::log;
 const S : u16 = 83;// utils::stringutil::get_char_code(&"S"); 83
 const D : u16 = 68;// utils::stringutil::get_char_code(&"D"); 68
 const C : u16 = 67;// utils::stringutil::get_char_code(&"C"); 67
-const PACKET_MAGIC_D:u16 = (S << 8) | D; //'DS'   default=not zip
-const PACKET_MAGIC_C:u16 = (S << 8) | C; //'CS'    zip
+pub const PACKET_MAGIC_D:u16 = (S << 8) | D; //'DS'   default=not zip
+pub const PACKET_MAGIC_C:u16 = (S << 8) | C; //'CS'    zip
 pub const HEAD_BYTES_SIZE:u32 = 2 + 4 + 4 + 4 + 4 + 8;
 
 
@@ -67,8 +67,6 @@ impl PacketHeader{
         magic : PACKET_MAGIC_D,
         offset:0,
         buf : vec![]
-        // write:BufWriter::with_capacity(0, inner),
-        // read:BufReader::new(R)
       }
    }
    // ================== 静态数据
@@ -118,29 +116,20 @@ impl PacketHeader{
       self.param
    }
 
-   pub fn set_buf(&mut self ,buffer:Vec<u8>){
+   pub fn set_buf(&mut self ,buffer:&Vec<u8>){
        self.buf.clear();
-       self.buf = buffer;
+       self.buf = buffer.to_vec();
    }
 
-   pub fn get_buf(&self) -> Vec<u8> {
-       self.buf
+   pub fn get_buf(&self) -> &Vec<u8> {
+       &self.buf
    }
 
-   pub fn update_offset(&mut self,offset:u32)-> u32{
-       self.offset += offset;
-       self.offset
-   }
-
-   pub fn pack(&mut self)-> Vec<u8> {
+   pub fn pack(&mut self)-> &Vec<u8> {
        self.clean_buf();
-       let mut vec_u8 = Vec::with_capacity(u8::from_u32(HEAD_BYTES_SIZE).unwrap().into());
-       let true_cap = vec_u8.capacity();
-       unsafe {
-           vec_u8.set_len(true_cap);
-       };
-       let output= vec_u8.into_boxed_slice();
-       byteorder::NativeEndian::write_u16(&mut output[..2],self.magic);
+       let vec_u8 = Vec::with_capacity(u8::from_u32(HEAD_BYTES_SIZE).unwrap().into());
+       let mut output= vec_u8.into_boxed_slice();
+       byteorder::NativeEndian::write_u16( &mut output[..2],self.magic);
        self.offset+=2;
        byteorder::NativeEndian::write_u32(&mut output[2..6],self.len);
        self.offset+=4;
@@ -153,33 +142,33 @@ impl PacketHeader{
        byteorder::NativeEndian::write_f64(&mut output[18..],self.time_stamp);
        self.offset+=8;
        self.buf = output.as_ref().to_vec();
-       self.buf
+       &self.buf
    }
 
-   pub fn un_pack(&mut self,buffer:&[u8]) -> usize {
+   pub fn un_pack(&mut self,buffer:&[u8]) -> u32 {
       let true_cap = buffer.len();
       if true_cap < u8::from_u32(HEAD_BYTES_SIZE).unwrap().into() {
           log!("Packet header length invalid.{:?}","error");
           return 0;
       }
-      let offset = 0;
-      self.magic = byteorder::NativeEndian::read_u16(&mut buffer[..2]);
+      let mut offset = 0;
+      self.magic = byteorder::NativeEndian::read_u16(&buffer[..2]);
       offset += 2;
 
-      self.len = byteorder::NativeEndian::read_u32(&mut buffer[2..6]);
+      self.len = byteorder::NativeEndian::read_u32(&buffer[2..6]);
       offset += 4;
   
-      self.opcode =  byteorder::NativeEndian::read_u32(&mut buffer[6..10]);
+      self.opcode =  byteorder::NativeEndian::read_u32(&buffer[6..10]);
       offset += 4;
   
       // Do not read uuid
-      self.uuid = byteorder::NativeEndian::read_u32(&mut buffer[10..14]);
+      self.uuid = byteorder::NativeEndian::read_u32(&buffer[10..14]);
       offset += 4;
   
-      self.param = byteorder::NativeEndian::read_u32(&mut buffer[14..18]);
+      self.param = byteorder::NativeEndian::read_u32(&buffer[14..18]);
       offset += 4;
   
-      self.time_stamp = byteorder::NativeEndian::read_f64(&mut buffer[18..]);
+      self.time_stamp = byteorder::NativeEndian::read_f64(&buffer[18..]);
       offset += 8;
   
       offset
