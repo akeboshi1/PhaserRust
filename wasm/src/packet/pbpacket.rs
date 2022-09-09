@@ -18,7 +18,7 @@ pub struct PBPacket{
     buf : Vec<u8>,
     // ==== pbpacket
     opcode_str : String,
-    pbClass : ProtoClass
+    pbClass : JsValue
 }
 
 impl PacketTrait for PBPacket{
@@ -29,7 +29,7 @@ impl PacketTrait for PBPacket{
             opcode: 0,
             buf: vec![],
             opcode_str: String::from(""),
-            pbClass:ProtoClass {  }
+            pbClass:JsValue::as_any
         }
     }
     fn init(&mut self, opcode: u32, param:u32) {
