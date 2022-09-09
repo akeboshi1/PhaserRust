@@ -1,12 +1,13 @@
 use std::any::Any;
+use js_sys::Object;
 use serde::{Serialize, Deserialize};
 pub trait AsAny: Any {
     fn as_any(&self)-> &dyn Any;
 }
 
-#[derive(Serialize, Deserialize,Debug)]
+#[derive(Debug)]
 pub struct ProtoClass{
-    // opcode:u8,
+    obj:Object
 }
 
 

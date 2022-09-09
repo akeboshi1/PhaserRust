@@ -12,7 +12,7 @@ if (window.Worker) {
     //     console.log('data from wasm: ' + data); //拿到 wasm 计算的结果
     // }
     import("../other/pkg/other").then(other => {
-    const config = {
+        const config = {
             type: Phaser.AUTO,
             parent: "phaser-rust-example",
             scale: {
@@ -67,3 +67,20 @@ if (window.Worker) {
     //     lua.global.close()
     // }
 }
+
+    // {
+    //   "mContentBuf": { "type": "Buffer", "data": [] }, 
+    //   "mHeader": 
+    //   { 
+    //     "_head_len": 26, "_len": 0, 
+    //     "_buf": { "type": "Buffer", "data": [] }, 
+    //     "_offset": 0, 
+    //     "_opcode": 1446041, 
+    //     "_param": 0, 
+    //     "_timestamp": 0, 
+    //     "_magic": 21316, 
+    //     "_uuid": 0 
+    //   }, 
+    //   "_opcode_str": "_OP_CLIENT_REQ_VIRTUAL_WORLD_PKT_SYNC_PACKAGE", 
+    //   "mContent": { "packageName": "FurniturePackage" } 
+    // }
