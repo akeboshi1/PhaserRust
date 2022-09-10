@@ -18,7 +18,7 @@ pub fn addProtocol(proto:JsValue) {
     str+="_pbClass";
     let val = js_sys::Reflect::get(&proto, &JsValue::from_str(&str)).unwrap();
     // let result = val.as_ref().unchecked_ref;
-    // log!("proto==>{:?}",result);
+    log!("proto==>{:?}",val);
     let testProto = TestProto::new();
     let fun = testProto.property(proto);
     log!("{:?}",fun);
