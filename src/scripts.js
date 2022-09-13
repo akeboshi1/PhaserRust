@@ -1,6 +1,5 @@
 import "phaser";
 import { SceneEnum, SceneManager } from "./render/scene/scene.manager";
-import { LuaFactory } from "wasmoon";
 
 if (window.Worker) {
     const myWorker = new Worker(new URL('./js/worker.js', import.meta.url));
@@ -48,18 +47,18 @@ if (window.Worker) {
     });
 
     // test add lua
-    const factory = new LuaFactory();
-    await factory.mountFile('./lua/test.lua', 
-    `return print("other lua")
-     function otherLua()
-         return print("other functionlua")`);
+    // const factory = new LuaFactory();
+    // await factory.mountFile('./lua/test.lua', 
+    // `return print("other lua")
+    //  function otherLua()
+    //      return print("other functionlua")`);
 
-        const lua = await factory.createEngine();
-        try {
-            const value = await lua.doString('return require("./lua/test.lua")')
-        } finally {
-            lua.global.close()
-        } 
+    //     const lua = await factory.createEngine();
+    //     try {
+    //         const value = await lua.doString('return require("./lua/test.lua")')
+    //     } finally {
+    //         lua.global.close()
+    //     } 
 }
 
     // {
