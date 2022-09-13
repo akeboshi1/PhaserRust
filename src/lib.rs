@@ -3,7 +3,7 @@
 
 extern crate wasm_bindgen;
 extern crate serde_json;
-use js_sys::{Uint8Array, Number};
+use js_sys::{Uint8Array, Number, Function};
 use rs::rustproto::op_def;
 use serde::{Serialize, Deserialize};
 use wasm_bindgen::prelude::*;
@@ -17,25 +17,22 @@ pub fn addProtocol(proto:JsValue) {
     let mut str = String::new();
     str+="_pbClass";
     let val = js_sys::Reflect::get(&proto, &JsValue::from_str(&str)).unwrap();
-    // let result = val.as_ref().unchecked_ref;
+
     log!("proto==>{:?}",val);
     let testProto = TestProto::new();
+    // jsvalue -> js 获得对应的proto数据结构
     let fun = testProto.property(proto);
-    log!("{:?}",fun);
-    // let obj = JsValue::_
-    // log!("serde{:?}",obj);
-        // 
-    // let tmp = JsValue::from(proto) as ProtoClass;
-    // protoclos.push(tmp);
+    log!("fun===>{:?}",fun);
 }
 
 #[wasm_bindgen(module = "/src/js/testproto.js")]
 extern "C"{
     type TestProto;
+    fn get_function(val:JsValue)-> Function;
     #[wasm_bindgen(constructor)]
     fn new() -> TestProto;
     #[wasm_bindgen(method)]
-    fn property(this:&TestProto,data:JsValue);
+    fn property(this:&TestProto,data:JsValue)-> Function;
 }
 
 #[wasm_bindgen(module = "/src/js/greet.js")]

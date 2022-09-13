@@ -1,3 +1,8 @@
+export function get_function(ptr){
+    const obj = Object.getOwnPropertyDescriptor(ptr, '_pbClass');
+    console.log("ptr:===",ptr);
+    return obj.value ;
+}
 export class TestProto {
     constructor() {
         this._token = 0;
@@ -13,7 +18,8 @@ export class TestProto {
 
     property(ptr) {
         const obj = Object.getOwnPropertyDescriptor(ptr, '_pbClass');
-        console.log("ptr:===",obj.value);
+        obj.value.call(this,ptr)
+        console.log("ptr:===",obj);
         return obj.value;
     }
 
