@@ -1,0 +1,210 @@
+syntax = "proto2";
+import "def.proto";
+import "gameconfig.proto";
+package op_pkt_def;
+
+// TODO auto gen Message by Header file
+// can not use the same name of message, because proto define unique error
+enum OPCODE {
+    _OP_UNKNOWN = 0x00000000;
+    //_OP_WORLD_REQ_GALAXY_EXAMPLE                   = 0x00120000;
+}
+
+// Match OPCODE enum and move first "_" 
+//message OP_WORLD_REQ_GALAXY_EXAMPLE
+//{
+//    required int32  port=1;
+//    optional string name=2;
+//}
+
+
+enum PKT_Quest_Stage
+{
+    PKT_QUEST_STAGE_NOT_ACCEPTED = 0; //未获得  目前没有展示需求
+    PKT_QUEST_STAGE_ACCEPTABLE = 1;   //可接取  目前没有展示需求
+    PKT_QUEST_STAGE_PROCESSING = 2;   //进行中
+    PKT_QUEST_STAGE_FINISHED = 3;     //完成
+    PKT_QUEST_STAGE_END = 4; // 领取奖励结束  目前没有展示需求
+}
+
+enum PKT_Order_Operator
+{
+    PKT_ORDER_DELIVERY = 0; // 送货
+    PKT_ORDER_DELETE = 2; // 删除
+    PKT_ORDER_SPEED_UP = 1; // 加速
+    PKT_ORDER_GET_REWARD = 3;
+}
+
+
+enum PKT_Quest_Type
+{
+    QUEST_MAIN_MISSION = 1; // 主线任务
+    QUEST_SIDE_MISSION = 2; // 支线任务
+    QUEST_DAILY_GOAL = 3; // 每日任务
+    ORDER_QUEST_MISSION = 4; // 订单任务
+    ORDER_QUEST_ROYAL_MISSION = 5;  // 皇家订单任务
+}
+
+// 等级
+message PKT_Level
+{
+    optional int32 level = 1;
+    optional int32 current_level_exp = 2;
+    optional int32 next_level_exp = 3;
+    optional string name = 4;
+}
+
+
+// 装扮
+message PKT_Avatar
+{
+    required string id = 1;
+    optional string name = 2;
+    optional op_gameconfig.Display display = 3;
+    optional op_gameconfig.Avatar avatar = 4;
+    optional string description = 5;
+    optional string visibility = 6;
+    optional string type = 7;
+}
+
+// 称号
+message PKT_Title
+{
+    required string id = 1;
+    optional string name = 2;
+    optional op_gameconfig.Display display = 3;
+}
+
+// 徽章
+message PKT_Badge
+{
+    required string id = 1;
+    optional string name = 2;
+    optional op_gameconfig.Display display = 3;
+}
+
+// 技能
+message PKT_Skill
+{
+    required string id = 1;
+    optional string name = 2;
+
+    optional op_gameconfig.Display display = 3;
+    optional PKT_Level level = 4; // 等级
+    optional string quality = 5;  // 品质
+    optional bool active = 6; // 是否已经激活/拥有
+    optional bool qualified = 7;  // 是否可以释放
+//    optional string tag = 8; // 标签位, 例如 是否为新技能, 空则不显示
+}
+
+message PKT_Property
+{
+    optional string key = 1;
+    optional string name = 2;
+    optional float value = 3;
+    optional float temp_value = 4;
+    optional op_gameconfig.Display display = 5;
+    optional float max = 6[default=-1]; // -1 代表无限
+    optional string id = 7;
+}
+
+
+enum PKT_Subscript
+{
+    PKT_SUBSCRIPT_UNSET = 0x0000;
+    PKT_SUBSCRIPT_CHECKMARK = 0x0001;
+}
+
+
+message PKT_UI
+{
+    optional string name = 1;
+    optional bool visible = 2;
+    optional bool disabled = 3;
+}
+
+
+message PKT_ROOM_MODEL
+{
+    optional string storeType = 1;  // 店铺模板类型
+    optional string des = 3;        // 店铺模板说明
+    optional string modelId = 4;    // 店铺模板id
+    optional op_gameconfig.Price price = 5;
+    optional string name = 6;
+}
+
+message PKT_INDUSTRY
+{
+    optional string industryType = 5;
+    optional string name = 1;  // 行业名称
+    repeated PKT_ROOM_MODEL room_models = 2;
+    optional string state = 3;  // 状态,buff附加
+    optional string des = 4;    // 目前状态描述
+    optional string buff_des = 6;   // buff本身描述
+}
+
+
+message PKT_RankChampion
+{
+    optional string name = 1;
+    optional string champion = 2;
+    optional string type = 3; // 行业类型  按规则拼底图
+    optional string key = 4; // 排行数值
+}
+
+
+message PKT_StoreRankItem
+{
+    optional string name = 1;
+    optional string owner_name = 2;
+    optional int32 index = 3;  // 排名, -1表示不在榜内
+    optional string store_type = 4;
+    optional string industry_type = 5;
+    optional int32 value = 6;
+}
+
+message PKT_CompareValue
+{
+    optional string key = 1;
+    optional double value = 2;
+    optional op_def.CompareType compare_type = 3;
+}
+
+
+enum PKT_PackageType
+{
+    FurniturePackage = 1;
+    AvatarPackage = 2;
+    PropPackage = 3;
+    MinePackage = 4;
+    EditFurniturePackage = 5;
+    ManorPackage = 6;
+}
+
+message PKT_PlayerInfo
+{
+    optional string nickname = 1;
+    optional string platform_id = 2;
+    optional PKT_Level level = 3;
+}
+
+
+enum PKT_PlayerInteraction
+{
+    PKT_invitePlayer = 1;
+    PKT_tracePlayer = 2;
+}
+
+enum PKT_MANOR_OP
+{
+    PKT_MANOR_OP_Buy = 1;
+    PKT_MANOR_OP_Edit = 2;
+    PKT_MANOR_OP_Change_Name = 3;
+}
+
+enum PKT_MANOR_COMMODITY_STATE
+{
+    PKT_MANOR_Owned = 1;
+    PKT_MANOR_InUse = 2;
+    PKT_MANOR_NotOwned = 3;
+}
