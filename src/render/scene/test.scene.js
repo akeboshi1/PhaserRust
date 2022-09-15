@@ -8,7 +8,9 @@ export class TestScene extends Phaser.Scene {
     }
 
     preload(){
+        this.load.setPath('assets/demos/');
         // this.load.image("test","assets/test.png");
+        this.load.spine('spineboy', 'spineboy.json', 'spineboy.atlas');
     }
 
     create() {
@@ -17,6 +19,22 @@ export class TestScene extends Phaser.Scene {
         grap.fillCircle(100, 100, 15);
 
 
+        this.startAnim = 'idle'
+
+		this.spineBoy = this.add.spine(400, 600, "spineboy", "idle", true);
+		this.cursors = this.input.keyboard.createCursorKeys()
+        this.animationNames=[];
+		this.initializeAnimationsState(this.spineBoy);
+
+        this.input.on("pointerdown",()=>{
+            this.startAnim = this.animationNames[3];
+            this.spineBoy.play("run",true);
+        },this);
+
+        this.input.on("pointerup",()=>{
+            this.startAnim = this.animationNames[0];
+            this.spineBoy.play("idle",true);
+        },this);
         // this.add.image(450,350,"test");
 
         setTimeout(() => {
@@ -31,4 +49,23 @@ export class TestScene extends Phaser.Scene {
             }
         }
     }
+
+    initializeAnimationsState(spineGO){
+		const startAnim = spineGO.getCurrentAnimation().name
+
+		spineGO.getAnimationList().forEach((name, idx) => {
+			this.animationNames.push(name)
+			if (name === startAnim)
+			{
+				this.animationIndex = idx
+			}
+		})
+	}
+
+    changeAnimation(index)
+	{
+		const name = this.animationNames[index]
+		this.spineBoy.play(name, true)
+		this.animNameLabel.text = name
+	}
 }

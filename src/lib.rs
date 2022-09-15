@@ -5,8 +5,8 @@ extern crate wasm_bindgen;
 use js_sys::{Uint8Array, Number, Function, ArrayBuffer};
 use rs::rustproto::op_def;
 use wasm_bindgen::prelude::*;
-use protobuf::descriptor::FileDescriptorProto;
-use protobuf::reflect::FileDescriptor;
+// use protobuf::descriptor::FileDescriptorProto;
+// use protobuf::reflect::FileDescriptor;
 mod rs;
 
 
@@ -30,25 +30,25 @@ pub fn addProtocol(proto:JsValue) {
 
 #[wasm_bindgen]
 pub fn serdeBuffer() {
-    let mut file_descriptor_protos = protobuf_parse::Parser::new()
-        .protoc()
-        .includes(&["rs/rustproto"])
-        .input("./rs/rustproto/op_def.proto")
-        .parse_and_typecheck()
-        .unwrap()
-        .file_descriptors;
-    assert_eq!(1, file_descriptor_protos.len());
+    // let mut file_descriptor_protos = protobuf_parse::Parser::new()
+    //     .protoc()
+    //     .includes(&["rs/rustproto"])
+    //     .input("./rs/rustproto/op_def.proto")
+    //     .parse_and_typecheck()
+    //     .unwrap()
+    //     .file_descriptors;
+    // assert_eq!(1, file_descriptor_protos.len());
 
     
-    let file_descriptor_proto: FileDescriptorProto = file_descriptor_protos.pop().unwrap();
-    let file_descriptor: FileDescriptor =
-            FileDescriptor::new_dynamic(file_descriptor_proto, &[]).unwrap();
-    let mmm_descriptor = file_descriptor
-            .message_by_package_relative_name("HelloRequest")
-            .unwrap();
-        let mut mmm = mmm_descriptor.new_instance();
-        let age_field = mmm_descriptor.field_by_name("name").unwrap();
-    log!("serde---{:?}",mmm_descriptor.full_name());
+    // let file_descriptor_proto: FileDescriptorProto = file_descriptor_protos.pop().unwrap();
+    // let file_descriptor: FileDescriptor =
+    //         FileDescriptor::new_dynamic(file_descriptor_proto, &[]).unwrap();
+    // let mmm_descriptor = file_descriptor
+    //         .message_by_package_relative_name("HelloRequest")
+    //         .unwrap();
+    //     let mut mmm = mmm_descriptor.new_instance();
+    //     let age_field = mmm_descriptor.field_by_name("name").unwrap();
+    // log!("serde---{:?}",mmm_descriptor.full_name());
 }
 
 #[wasm_bindgen(module = "/src/js/testproto.js")]

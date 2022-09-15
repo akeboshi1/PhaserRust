@@ -1,5 +1,6 @@
 import "phaser";
 import { SceneEnum, SceneManager } from "./render/scene/scene.manager";
+import 'phaser/plugins/spine/dist/SpinePlugin';
 
 if (window.Worker) {
     const myWorker = new Worker(new URL('./js/worker.js', import.meta.url));
@@ -28,6 +29,11 @@ if (window.Worker) {
                 createContainer: true
             },
             backgroundColor: "#4488aa",
+            plugins: {
+                scene: [
+                    { key: 'SpinePlugin', plugin: window.SpinePlugin, mapping: 'spine' }
+                ]
+            }
             // fps: {
             //     target: 60,
             //     forceSetTimeOut: true
