@@ -1,0 +1,2181 @@
+syntax = "proto2";
+import "def.proto";
+import "gameconfig.proto";
+import "gameconfignew.proto";
+import "pkt_def.proto";
+package op_client;
+
+/* edit by n 18/09/20
+ *  ########################################################
+ *  #   magic  #  uit16  #  16bit  #  zip by zlib or not  #
+ *  #######################################################
+ *  #   len   # uint16  #  16bit #  package body length  #
+ *  ######################################################
+ *  #   op   #  uint   #  32bit #  op code for protobuf  #
+ *  #####################################################
+ *  #  uuid # uint64 #  64bit #   uuid for connection   #
+ *  ######################################################
+ *  # param #  uint   # 32bit #   param for head        #
+ *  #####################################################
+ *
+ *  Total should be 96bit for head length
+ */
+
+// TODO auto gen Message by clinet.h
+// can not use the same name of message, because proto define unique error
+enum OPCODE {
+    OP_MAJOR = 0x0014;
+    _OP_UNKNOWN = 0x00000000;
+    _OP_CLIENT_PING = 0x0014ffff;
+
+    _OP_GALAXY_RES_CLIENT_START_NEW_WORLD = 0x00140002;
+
+    _OP_GATEWAY_RES_CLIENT_ERROR = 0x00141000;
+    _OP_GATEWAY_REQ_CLIENT_MOVE_CHARACTER = 0x00141001;
+    _OP_GATEWAY_RES_CLIENT_START_NEW_WORLD = 0x00141002;
+    _OP_GATEWAY_RES_CLIENT_VIRTUAL_WORLD_INIT = 0x00141004;
+    _OP_GATEWAY_REQ_CLIENT_MOVE_ELEMENT = 0x00141003;
+
+    _OP_GATEWAY_REQ_CLIENT_SET_CHARACTER_POSITION = 0x00141005;
+    _OP_GATEWAY_REQ_CLIENT_SET_ELEMENT_POSITION = 0x00141007;
+    _OP_GATEWAY_REQ_CLIENT_CHANGE_ELEMENT_ANIMATION = 0x00141009;
+    _OP_GATEWAY_RES_CLIENT_PONG                     = 0x0014100a;
+
+    _OP_VIRTUAL_WORLD_REQ_CLIENT_SHOW_PLACARD = 0x00141025;
+    _OP_VIRTUAL_WORLD_REQ_CLIENT_SCENE_TRANSITIONS = 0x00141011;
+
+    _OP_VIRTUAL_WORLD_REQ_CLIENT_CHANGE_TERRAIN_ANIMATION = 0x00141013;
+    _OP_VIRTUAL_WORLD_REQ_CLIENT_CHANGE_CHARACTER_ANIMATION = 0x00141015;
+    _OP_VIRTUAL_WORLD_REQ_CLIENT_CHANGE_ITEM_ANIMATION = 0x00141017;
+    _OP_VIRTUAL_WORLD_REQ_CLIENT_FORCE_OFFLINE = 0x00141019;
+
+    _OP_VIRTUAL_WORLD_REQ_CLIENT_CHARACTER_TALKING = 0x00141021;
+    _OP_VIRTUAL_WORLD_REQ_CLIENT_CHARACTER_SHUT_UP = 0x00141023;
+
+    //pyr
+    _OP_VIRTUAL_WORLD_RES_CLIENT_ENTER_SCENE = 0x00141006;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_SELECT_CHARACTER = 0x00141008;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_SYNCHRO_CHARACTER = 0x00141010;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_CHAT = 0x00141012;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_LUA_LOG = 0x00141014;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_ADD_ELEMENT = 0x00141016;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_REMOVE_ELEMENT = 0x00141018;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_UI_BIND_ATTRIBUTE = 0x00141020;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_ADD_CHARACTER = 0x00141022;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_REMOVE_CHARACTER = 0x00141024;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_ADD_TERRAIN = 0x00141026;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_GAME_OVER = 0x00141028;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_CHANGE_SCENE = 0x00141030;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_ADD_TERRAIN_END = 0x00141032;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_SYNCHRO_PACKAGE = 0x00141034;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_ADD_ITEM = 0x00141036;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_REMOVE_ITEM = 0x00141038;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_EXCHANGE_ITEM_POS = 0x00141040;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_REMOVE_TERRAIN = 0x00141042;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_RESET_CAMERA_SIZE = 0x00141044;
+    //_OP_VIRTUAL_WORLD_RES_CLIENT_TARGET_UI          = 0x00141046;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_SHOW_UI = 0x00141048;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PACKAGE_ITEM_USE = 0x00141050;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_STORED_ITEM = 0x00141052;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_CLOSE_UI = 0x00141056;
+
+    _OP_VIRTUAL_WORLD_RES_CLIENT_OPEN_PACKAGE = 0x00141058;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_QCLOUD_GME_AUTHBUFFER = 0x00141060;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_NOTICE = 0x00141062;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_ONLY_BUBBLE = 0x00141064;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_ONLY_BUBBLE_CLEAN = 0x00141066;
+    //pyr end
+
+    _OP_VIRTUAL_WORLD_RES_CLIENT_SYNCHRO_SHOP = 0x00141068;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_QUERY_PACKAGE = 0x00141070;
+
+    _OP_VIRTUAL_WORLD_RES_CLIENT_SYNC_USER_BALANCE = 0x00141072;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_UPDATE_UI = 0x00141074;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_SHOW_EFFECT = 0x00141076;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_SYNC_TIME = 0x00141078;
+    _OP_VIRTUAL_WORLD_REQ_CLIENT_MOVE_SPRITE = 0x00141079;
+    _OP_VIRTUAL_WORLD_REQ_CLIENT_TRIGGER_MOVE_SPRITE = 0x0014107a;
+
+    _OP_VIRTUAL_WORLD_RES_CLIENT_CUSTOM_PROTO = 0x0014107b; // 服务器客制化协议
+
+    // editor
+    _OP_EDITOR_REQ_CLIENT_SET_EDITOR_MODE = 0x00142001;
+    _OP_EDITOR_REQ_CLIENT_SET_EDITOR_ELEMENT = 0x00142003;
+    _OP_EDITOR_REQ_CLIENT_ADD_ELEMENT = 0x00142005;
+    _OP_EDITOR_REQ_CLIENT_ADD_TERRAIN = 0x00142007;
+    _OP_EDITOR_REQ_CLIENT_DELETE_ELEMENT = 0x00142009;
+    _OP_EDITOR_REQ_CLIENT_DELETE_TERRAIN = 0x00142011;
+    _OP_EDITOR_REQ_CLIENT_MOUSE_FOLLOW = 0x00142013;
+    _OP_EDITOR_REQ_CLIENT_SELECT_ELEMENT = 0x00142015;
+    _OP_EDITOR_REQ_CLIENT_FIXED_TO_ELEMENT = 0x00142017;
+    _OP_EDITOR_REQ_CLIENT_SYNC_ELEMENT = 0x00142019;
+
+    _OP_EDITOR_REQ_CLIENT_ALIGN_GRID = 0x00142021;
+    _OP_EDITOR_REQ_CLIENT_VISIBLE_GRID = 0x00142023;
+
+    _OP_EDITOR_REQ_CLIENT_CREATE_SPRITE = 0x00142002;
+    _OP_EDITOR_REQ_CLIENT_DELETE_SPRITE = 0x00142004;
+    _OP_EDITOR_REQ_CLIENT_SYNC_SPRITE =  0x00142006;
+
+    // editor end
+
+    _OP_VIRTUAL_WORLD_REQ_CLIENT_SYNC_SPRITE   = 0x00142025;
+    _OP_VIRTUAL_WORLD_REQ_CLIENT_ADD_SPRITE    = 0x00142026;
+    _OP_VIRTUAL_WORLD_REQ_CLIENT_DELETE_SPRITE = 0x00142027;
+    _OP_VIRTUAL_WORLD_REQ_CLIENT_ADJUST_POSITION = 0x00142029;
+    _OP_VIRTUAL_WORLD_REQ_CLIENT_CURRENT_SCENE_ALL_SPRITE = 0x0014202a;
+
+    _OP_VIRTUAL_WORLD_REQ_CLIENT_GOTO_ANOTHER_GAME = 0x00142030;
+    _OP_VIRTUAL_WORLD_REQ_CLIENT_CHANGE_TO_EDITOR_MODE  = 0x00142031;
+    _OP_EDITOR_REQ_CLIENT_CHANGE_TO_EDITOR_MODE         = 0x00142032;
+
+    _OP_VIRTUAL_WORLD_REQ_CLIENT_MOUSE_SELECTED_SPRITE           = 0x00142033;
+    _OP_EDITOR_REQ_CLIENT_MOUSE_SELECTED_SPRITE                  = 0x00142034;
+    _OP_EDITOR_REQ_CLIENT_FETCH_SPRITE                           = 0x00142035;
+
+    _OP_VIRTUAL_WORLD_REQ_CLIENT_SET_CAMERA_FOLLOW               = 0x00142036;
+
+    _OP_VIRTUAL_WORLD_REQ_CLIENT_CHANGE_SPRITE_ANIMATION         = 0x00142037;
+
+    _OP_VIRTUAL_WORLD_REQ_CLIENT_ADD_SPRITE_END = 0x00142038;
+
+    _OP_VIRTUAL_WORLD_REQ_CLIENT_ENABLE_EDIT_MODE           = 0x00142039;
+
+    _OP_VIRTUAL_WORLD_RES_CLIENT_EDIT_MODE_QUERY_EDIT_PACKAGE = 0x0014203a;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_EDIT_MODE_READY              = 0x0014203b;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_EDIT_MODE_SELECTED_SPRITE    = 0x0014203c;
+
+    _OP_VIRTUAL_WORLD_REQ_CLIENT_SET_SPRITE_POSITION          = 0x0014203d;
+
+    _OP_VIRTUAL_WORLD_RES_CLIENT_CREATE_ROLE_GENERATE_NEW_NAME      = 0x0014203f;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_CREATE_ROLE_ERROR_MESSAGE          = 0x00142040;
+    _OP_VIRTUAL_WORLD_REQ_CLIENT_SHOW_CREATE_ROLE_UI                = 0x00142041;
+    _OP_VIRTUAL_WORLD_REQ_CLIENT_CLOSE_CREATE_ROLE_UI               = 0x00142042;
+
+    _OP_VIRTUAL_WORLD_RES_CLIENT_GET_MARKET_CATEGORIES              = 0x00142043;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_MARKET_QUERY                       = 0x00142044;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_MARKET_QUERY_COMMODITY_RESOURCE    = 0x00142045;
+
+    _OP_VIRTUAL_WORLD_REQ_CLIENT_ENABLE_MARKET                      = 0x00142046;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_MARKET_QUERY_PACKAGE               = 0x00142047;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_EDIT_MODE_ADD_SPRITE_ERROR         = 0x00142048;
+    _OP_VIRTUAL_WORLD_REQ_CLIENT_MOVE_SPRITE_BY_PATH                = 0x00142049;
+
+    _OP_VIRTUAL_WORLD_REQ_CLIENT_UNWALKABLE_BIT_MAP                 = 0x0014204a;
+
+    _OP_VIRTUAL_WORLD_RES_CLIENT_EDIT_MODE_GET_SPAWN_POINT          = 0x0014204b;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_EDIT_MODE_ROOM_INFO                = 0x0014204c;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_EDIT_MODE_UPDATE_ROOM_INFO         = 0x0014204f;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_EDIT_MODE_ROOM_LIST                = 0x0014204d;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_EDIT_MODE_ROTATE_SPRITE            = 0x0014204e;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_EDIT_MODE_ENTER_ROOM               = 0x00142050;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_EDIT_MODE_ADD_SPRITE_BY_TYPE       = 0x00142051;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_EDIT_MODE_ADD_SINGLE_SPRITE_BY_TYPE = 0x00142052;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_EDIT_MODE_GET_PLAYER_ENTER_ROOM_HISTORY = 0x00142053;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_EDIT_MODE_GET_PACKAGE_CATEGORIES        = 0x00142054;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_MARKET_QUERY_PACKAGE_ITEM_RESOURCE    = 0x00142055;
+    _OP_VIRTUAL_WORLD_REQ_CLIENT_SHOW_INTERACTIVE_BUBBLE               = 0x00142056;
+    _OP_VIRTUAL_WORDL_REQ_CLIENT_REMOVE_INTERACTIVE_BUBBLE             = 0x00142057;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_MOVE_SPRITE                        = 0x0014205e;
+
+
+    // Mining
+    _OP_VIRTUAL_WORLD_REQ_CLIENT_MINING_MODE_SHOW_REWARD_PACKAGE       = 0x00142058;
+    _OP_VIRTUAL_WORLD_REQ_CLIENT_MINING_MODE_SHOW_SELECT_EQUIPMENT_PANEL = 0x0014205d;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_MINING_MODE_ACTIVE_EQUIPMENT            = 0x00142060;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_MINING_MODE_QUERY_MINE_PACKAGE          = 0x00142061;
+
+    _OP_VIRTUAL_WORLD_RES_CLIENT_SOUND_CTL                           =  0x0014205b;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_SOUND_SETTING                        = 0x0014205c;
+
+    _OP_EDITOR_REQ_CLIENT_ADD_SPRITES_WITH_LOCS              =   0x00142059;
+    _OP_EDITOR_REQ_CLIENT_DELETE_SPRITES_WITH_LOCS           =   0x0014205a;
+
+    _OP_EDITOR_REQ_CLIENT_ADD_MOSSES           =   0x00142062;
+    _OP_EDITOR_REQ_CLIENT_DELETE_MOSSES           =   0x00142063;
+    _OP_EDITOR_REQ_CLIENT_SYNC_MOSSES           =   0x00142064;
+
+    _OP_VIRTUAL_WORLD_REQ_CLIENT_SHOW_REWARD_TIPS = 0x00142065;
+
+    _OP_EDITOR_REQ_CLIENT_ADD_SCENERY           =   0x00142066;
+    _OP_EDITOR_REQ_CLIENT_DELETE_SCENERY           =   0x00142067;
+    _OP_EDITOR_REQ_CLIENT_UPDATE_SCENERY          =   0x00142068;
+    _OP_EDITOR_REQ_CLIENT_FETCH_SCENERY          =   0x00142069;
+    _OP_VIRTUAL_WORLD_REQ_CLIENT_PKT_PLAYER_INFO   = 0x00142070;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_SELF_PLAYER_INFO = 0x00142071;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_ANOTHER_PLAYER_INFO = 0x00142072;
+
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_CRAFT_SKILLS  = 0x00142073;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_CRAFT_QUERY_FORMULA  = 0x00142074;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_RESET_AVATAR         = 0x00142075;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_CURRENT_DRESS_AVATAR_ITEM_ID = 0x00142076;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_QUERY_QUEST_LIST = 0x00142077;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_QUERY_QUEST_DETAIL = 0x00142078;
+    _OP_VIRTUAL_WORLD_REQ_CLIENT_MARKET_SHOW_MARKET_BY_NAME = 0x00142079;
+    _OP_VIRTUAL_WORLD_REQ_CLIENT_PKT_REFRESH_ACTIVE_UI      = 0x0014207a;
+    _OP_VIRTUAL_WORLD_REQ_CLIENT_SYNC_STATE                 = 0x0014207b;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_UNLOCK_ELEMENT_REQUIREMENT  = 0x0014207c;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_HANDHELD                    = 0x0014207d;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_INDUSTRY_MODELS             = 0x0014207e;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_MY_STORE                    = 0x00142080;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_COMMERCIAL_STREET           = 0x00142081;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_MARKET_PLAN_MODELS_BY_TYPE = 0x00142082;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_MARKET_PLAN                 = 0x00142083;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_QUERY_STORE_RANKING_LIST          = 0x00142084;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_QUERY_STORE_RANKING_DETAIL        = 0x00142085;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_QUERY_STORE_RANKING_REWARD        = 0x00142086;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_QUERY_STORE_ENTER_HISTORY         = 0x00142087;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_SYNC_PACKAGE                      = 0x00142088;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_UPDATE_PACKAGE                    = 0x00142089;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_SEARCH_ROOM                       = 0x0014208a;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_PLAYER_LIST                       = 0x0014208b;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_SEARCH_PLAYER                     = 0x0014208c;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_ORDER_LIST                        = 0x0014208d;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_QUERY_PLAYER_PROGRESS             = 0x0014208e;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_JOB_LIST                          = 0x00142090;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_QUERY_ROOM_REFURBISH_REQUIREMENTS  = 0x00142091;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_PARTY_LIST                         = 0x00142092;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_CREATE_PARTY_REQUIREMENTS          = 0x00142093;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_REQUIRE_FURNITURE_UNFROZEN_REQUIREMENTS = 0x00142094;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_STREET_LIST                        = 0x00142095;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_SET_POSITION                          = 0x00142096;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_STOP                                  = 0x00142097;
+    
+    _OP_VIRTUAL_WORLD_RES_CLIENT_TERRAIN_COLLECTION                    = 0x00142098;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_QUERY_CONFIGS                      = 0x00142099;
+
+    _OP_VIRTUAL_WORLD_RES_CLIENT_ACTIVE_SPRITE                          = 0x0014209b; // 激活物件交互行为
+    _OP_VIRTUAL_WORLD_RES_CLIENT_ACTIVE_SPRITE_END                      = 0x0014209c; // 交互行为停止后广播
+
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_PARTY_SEND_GIFT                   = 0x0014209a;  // 派对中发送礼物的广播协议
+
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_TEAMBUILD_ELEMENT_REQUIREMENT     = 0x001420a0;  // 团队共建协议
+
+
+    // 玩家信息相关 20b0~20bf
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_CURRENT_ROOM_PLAYER_LIST            = 0x001420b0; // 当前场景内玩家信息
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_QUERY_QUEST_GROUP                   = 0x001420b1; // 返回主线任务组
+    _OP_VIRTUAL_WORLD_REQ_CLIENT_PKT_SHOW_CREATE_ROLE_UI                 = 0x001420b3; // 新版创建角色UI 2020/12/22
+    _OP_VIRTUAL_WORLD_REQ_CLIENT_PKT_CLOSE_CREATE_ROLE_UI                = 0x001420b4;  // 新版创建角色关闭UI
+    _OP_VIRTUAL_WORLD_REQ_CLIENT_PKT_GUIDE_DATA                          = 0x001420b5; // 玩家引导信息
+
+
+    // 编辑模式
+    _OP_VIRTUAL_WORLD_RES_CLIENT_START_EDIT_MODEL            = 0x00142100; // 返回客户端开启编辑结果
+    _OP_VIRTUAL_WORLD_RES_CLIENT_EDIT_MODEL_RESULT           = 0x00142101; // 返回客户端编辑结果
+    _OP_VIRTUAL_WORLD_REQ_CLIENT_NOTICE_RELOAD_SCENE         = 0x00142102; // 重新加载场景
+    _OP_VIRTUAL_WORLD_REQ_CLIENT_UNLOCK_DONE                 = 0x00142103; // 修复家具成功通知
+     _OP_VIRTUAL_WORLD_REQ_CLIENT_INVESTIGATE_SUCCESS         = 0x00142104; // 修复家具成功通知
+
+    // 游戏设置 20c0~20cf
+    // avatar模式 suit_type or avatar
+    _OP_VIRTUAL_WORLD_REQ_CLIENT_GAME_MODE = 0x001420c0;
+    _OP_VIRTUAL_WORLD_RES_CLIENT_ROOM_LIST                  = 0x001420c1; // 返回房间列表
+    _OP_VIRTUAL_WORLD_RES_CLIENT_SELF_ROOM_LIST             = 0x001420c2; // 返回自己的房间列表
+
+    // 玩家本身信息同步
+    _OP_VIRTUAL_WORLD_REQ_CLIENT_SYNC_ACTOR                              = 0x00143000;
+
+    // 抽卡相关
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_DRAW_RESULT                        = 0x00143011; // 抽卡结果
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_DRAW_STATUS_RESULT                 = 0x00143012; // 抽卡状态返回
+
+    // 合成与重铸
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_COMBINE_RESULT                     = 0x00143021; // 合成结果
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_FORGE_RESULT                       = 0x00143022; // 重铸结果
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_FORGE_LIST_RESULT                  = 0x00143023; // 重铸目标列表结果
+
+    // 探索关卡
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_QUERY_CHAPTER_RESULT               = 0x00143031; // 请求章节数据结果
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_EXPLORE_SUMMARY                    = 0x00143032; // 通关结算数据
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_EXPLORE_REQUIRE_LIST               = 0x00143033; // 关卡中更新目标列表
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_EXPLORE_CHAPTER_PROGRESS           = 0x00143034; // 更新关卡进度
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_EXPLORE_SHOW_COUNTDOWN             = 0x00143035; // 显示倒计时
+
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_ROOM_SHOW_GUIDE_TEXT               = 0x00143041; // 显示下一步指引
+
+
+    // 商店
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_SHOP_DATA                          = 0x00143051; // 商店商品列表
+    
+    // 图鉴
+    _OP_CLIENT_REQ_VIRTUAL_WORLD_PKT_UPDATE_GALLERY                     = 0x00143056; // 更新图鉴信息（注意这个可能是局部更新）
+    _OP_CLIENT_REQ_VIRTUAL_WORLD_PKT_UPDATE_GALLERY_COLLECTION_DATA     = 0x00143057; // 更新收藏图鉴信息（注意这个可能是局部更新）
+
+    //邮件
+    _OP_CLIENT_REQ_VIRTUAL_WORLD_PKT_UPDATE_MAILS_DATA                  = 0x00143061; // 发送邮件信息
+
+    
+    _OP_CLIENT_REQ_VIRTUAL_RED_DOT_STATUS                               = 0x00143071; //发送红点状态
+
+
+    // 通用协议
+    _OP_VIRTUAL_WORLD_REQ_CLIENT_SHOW_HIGH_QUALITY_REWARD_TIPS          = 0x0014f001;  // 获得高价值物品
+    _OP_VIRTUAL_WORLD_REQ_CLIENT_SHOW_BLING_PANEL                       = 0x0014f002;  // 弹出闪亮面板
+
+    // 2020.12.02 PKT协议 0x00145
+    // 人物相关   000~03f
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_DRESS_UP_AVATAR                    = 0x00145000; // 装扮保存状态返回
+    _OP_VIRTUAL_WORLD_RES_CLIENT_PKT_LEVEL_UP                           = 0x00145001; // 升级
+
+    _OP_VIRTUAL_WORLD_RES_CLIENT_TEST                                   = 0x0014fff0;
+
+}
+
+//pyr
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_SYNCHRO_SHOP {
+    required op_gameconfig.Shop shop = 1;
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_LUA_LOG {
+    required string log_context = 1;
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_UI_BIND_ATTRIBUTE {
+    repeated op_gameconfig.Slot slot = 1;
+}
+//pyr end
+
+message OP_CLIENT_PING {
+    required string msg = 1;
+    required op_def.ResponseStatus rs = 2;
+}
+
+
+message OP_GATEWAY_RES_CLIENT_START_NEW_WORLD {
+    optional string msg = 1;
+}
+
+
+message OP_GATEWAY_RES_CLIENT_ERROR {
+    required string msg = 1;
+    required op_def.ResponseStatus responseStatus = 2;
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_GAME_OVER {
+    required string msg = 1;
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_CHANGE_SCENE {
+    required Scene scene = 1;
+    required Actor actor = 2;
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_SYNCHRO_PACKAGE {
+    required op_gameconfig.Package package = 1;
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_ADD_ITEM {
+    repeated op_gameconfig.Item item = 1;
+    required int32 packageid = 2;
+    required int32 id = 3;
+    required op_def.NodeType nodetype = 4;
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_REMOVE_ITEM {
+    required int32 id = 1;
+    required int32 packageid = 2;
+    repeated int32 itemId = 3;
+    required op_def.NodeType nodetype = 4;
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_EXCHANGE_ITEM_POS {
+    optional int32 firstPos = 1;
+    optional op_gameconfig.Item firstItem = 2;
+    optional int32 secondPos = 3;
+    optional op_gameconfig.Item secondItem = 4;
+}
+
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_TARGET_UI {
+    required int32 ui_id = 1;
+    required int32 component_id = 2;
+    repeated int32 data = 3;
+}
+
+message KeyValuePairs {
+    required string key = 1;
+    required string value = 2;
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_SHOW_UI {
+    repeated op_gameconfig_01.Text text = 1;
+    repeated op_gameconfig_01.Button button = 3;
+    required int32 id = 4;
+    repeated int32 time = 5;
+    required string name = 6;
+    repeated int32 data = 7;
+    repeated Actor actors = 8;
+    repeated KeyValuePairs kvps = 9;
+    repeated op_gameconfig_01.MenuItem menu_item = 10;
+    repeated op_gameconfig_01.Display display = 11;
+    repeated op_gameconfig_01.InputText input_text = 12;
+}
+
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_UPDATE_UI {
+    repeated op_gameconfig_01.Text text = 1;
+    repeated op_gameconfig_01.Button button = 3;
+    required int32 id = 4;
+    repeated int32 time = 5;
+    required string name = 6;
+    repeated int32 data = 7;
+    repeated Actor actors = 8;
+    repeated KeyValuePairs kvps = 9;
+    repeated op_gameconfig_01.MenuItem menu_item = 10;
+    repeated op_gameconfig_01.Display display = 11;
+    repeated op_gameconfig_01.InputText input_text = 12;
+}
+
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_CLOSE_UI {
+    required string name = 1;
+}
+
+/////////////////////////////////////////////////
+// virtual world message 0
+////////////////////////////////////////////////
+
+
+message MoveData {
+    required int32 move_object_id = 1;
+    required op_def.MoveType move_type = 2;
+    required op_def.Direction direction = 3;
+    required op_def.PBPoint3f destination_point3f = 4; // 终点坐标
+    required int32 time_span = 5; // 时间间隔，根据发包间隔外加预计网络延时决定
+    optional double timestemp = 6;
+}
+
+message OP_GATEWAY_REQ_CLIENT_MOVE_CHARACTER {
+    repeated MoveData move_data = 1;
+}
+
+
+message OP_GATEWAY_REQ_CLIENT_MOVE_ELEMENT {
+    repeated MoveData move_data = 1;
+}
+
+
+message MovePosition {
+    required int32 move_object_id = 1;
+    required op_def.MoveType move_type = 2;
+    required op_def.Direction direction = 3;
+    required op_def.PBPoint3f destination_point3f = 4; // 终点坐标
+}
+
+
+message OP_GATEWAY_REQ_CLIENT_SET_CHARACTER_POSITION {
+    repeated MovePosition move_postion = 1;
+}
+
+
+message OP_GATEWAY_REQ_CLIENT_SET_ELEMENT_POSITION {
+    repeated MovePosition move_postion = 1;
+}
+
+//message OP_CLIENT_REQ_GATEWAY_SYNC_PLAYER_LOCATION
+//{
+//    required Point3f point3f = 1;
+//}
+//
+//message OP_GATEWAY_RES_CLIENT_SYNC_PLAYER_LOCATION
+//{
+//    required Point3f point3f = 1;
+//}
+
+//聊天文本设置
+message Chat_Setting {
+    optional string text_color = 1;
+    optional int32 text_fontsize = 2;
+    optional int32 text_pattern = 3;
+    optional int32 duration = 4;
+    optional string bubble_resource = 5;
+}
+
+//聊天气泡
+message Chat_Bubble {
+    required int32 pattern = 1;
+    optional Chat_Setting chatsetting = 2;
+}
+
+//聊天消息
+message OP_VIRTUAL_WORLD_RES_CLIENT_CHAT {
+    required op_def.ChatChannel chat_channel = 1;
+    optional int32 chat_otheractor = 2;
+    required string chat_context = 3;
+    optional int32 chat_senderid = 4;
+    optional Chat_Bubble chat_bubble = 5;
+    optional Chat_Setting chat_setting = 6;
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_NOTICE {
+    required string notice_context = 1;
+    optional Chat_Setting chatsetting = 2;
+}
+
+///只有气泡的消息
+message OP_VIRTUAL_WORLD_RES_CLIENT_ONLY_BUBBLE {
+    required string context = 1;
+    required int32 receiverid = 2;
+    optional Chat_Setting chatsetting = 3;
+}
+
+///只有气泡的清除消息
+message OP_VIRTUAL_WORLD_RES_CLIENT_ONLY_BUBBLE_CLEAN {
+    required int32 receiverid = 1;
+}
+
+message ShortcutKey {
+    optional int32 keycode = 1;
+    optional int32 bindtype = 2;
+}
+//pyr
+
+message Actor {
+    required int32 id = 1;
+    optional string name = 2;
+    optional int32 max_num = 3 [default = 20]; //  类型最大人数
+    optional string camp = 4;
+    optional op_gameconfig.Avatar avatar = 5;
+    repeated op_gameconfig.Attribute attributes = 6;
+    optional op_gameconfig.Package package = 7; //Item Container, N item in package
+    optional int32 scene_id = 8;
+    optional int32 x = 9;
+    optional int32 y = 10;
+    optional int32 z = 11;
+    optional int32 avatar_dir = 13; // 美术资源方向 与人物初始方向不同， 人物一般固定为[1,3,5,7] 四个方向中的一个
+    optional string walkable_area = 14;
+    optional string collision_area = 12;
+    repeated int32 origin_point = 15; // default 0,0, set position on collision and walkable area
+    repeated int32 walk_origin_point = 16;
+    optional string nickname = 17;
+    repeated op_gameconfig.Slot slot = 18;
+    required int32 uuid = 19;
+    optional bool is_in_current_scene_voice_room = 20;
+    repeated op_def.BadgeCard display_badge_cards = 21;
+    optional string platform_id = 22;
+    optional float speed = 23;
+    optional uint32 input_mask = 24[default=0xffffffff]; // op_def.UserInput 0x00000000 表示不监听任何input
+    optional bool immovable = 25[default=false];
+}
+
+message Scene {
+    required int32 id = 1;
+    required float cols = 2;
+    required float rows = 3;
+    required int32 tile_width = 4;
+    required int32 tile_height = 5;
+    optional float z_start = 6 [default = 0];
+    optional float z_end = 7 [default = 0];
+    repeated Element elements = 8;
+    repeated Terrain terrains = 9;
+    optional int32 voice_chat_room_id = 10;
+    repeated op_gameconfig.Shop shops = 11;
+    optional op_def.SceneTypeEnum scene_type = 12;
+}
+
+message Element {
+    required int32 id = 1;
+    required string type = 2;
+    required int32 dir = 3; // 方向
+    required float x = 4;
+    required float y = 5;
+    required float z = 6 [default = 0];
+    optional string name = 7;
+    optional string des = 8;
+    repeated op_gameconfig_01.AnimationData animations = 15;
+    repeated op_gameconfig.Attribute attributes = 16;
+    optional string animation_name = 21; // 当前播放的animation
+    optional bool scale = 22;
+    optional op_gameconfig.Display display = 23;
+    optional op_gameconfig.Package package = 24;
+    repeated op_gameconfig.Shop shops = 25;
+}
+
+//选择角色
+message OP_VIRTUAL_WORLD_RES_CLIENT_SELECT_CHARACTER {
+    required int32 selectCharacterId = 2;
+}
+
+//scene init data to client
+//actorId is uuid
+message OP_VIRTUAL_WORLD_RES_CLIENT_ENTER_SCENE {
+    required Actor actor = 1;
+    required Scene scene = 2;
+    repeated op_gameconfig.TerrainType terrain_Types = 3;
+
+}
+
+message OP_VIRTUAL_WORLD_REQ_CLIENT_SCENE_TRANSITIONS {
+
+}
+
+
+message  ChangeAnimation {
+    required string animation_name = 1;
+    optional bool scale = 2; // 是否翻转
+    optional int32 times = 3; // 播放次数 可以不填 按编辑器内设置播放
+}
+
+
+message OP_GATEWAY_RES_CLIENT_VIRTUAL_WORLD_INIT {
+    repeated op_gameconfig.TerrainType terrain_Types = 1;
+    repeated op_gameconfig.Element_type element_Types = 2;
+    repeated op_gameconfig.ItemType item_Types = 3;
+    repeated op_gameconfig.AvatarBackbone avatarBackbone = 4;
+    repeated string resource_root = 5;
+    repeated op_gameconfig.Shop shops = 6;
+    repeated string config_urls = 7;
+    repeated op_def.KeyCodeEvent key_events = 8;
+    optional string virtual_world_id = 9;
+    optional op_def.MoveStyle move_style = 10[default= DIRECTION_MOVE_STYLE];
+    optional string app_key = 11; // 平台游戏app key
+}
+
+
+message OP_VIRTUAL_WORLD_REQ_CLIENT_CHARACTER_TALKING {
+    required int32 id = 1;
+}
+
+message OP_VIRTUAL_WORLD_REQ_CLIENT_CHARACTER_SHUT_UP {
+    required int32 id = 1;
+}
+
+//add element
+message OP_VIRTUAL_WORLD_RES_CLIENT_ADD_ELEMENT {
+    required int32 sceneid = 1;
+    repeated Element elements = 2;
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_REMOVE_ELEMENT {
+    required int32 sceneid = 1;
+    required int32 elementid = 2;
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_SYNCHRO_CHARACTER {
+    repeated Actor actors = 1;
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_ADD_CHARACTER {
+    repeated Actor actors = 1;
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_REMOVE_CHARACTER {
+    required int32 uuid = 1;
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_ADD_TERRAIN {
+    required int32 sceneid = 1;
+    repeated Terrain terrain = 2;
+}
+
+message OP_VITUAL_WORLD_RES_CLIENT_AFTER_COLLISION {
+    required int32 collision_id = 1;
+}
+
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_QCLOUD_GME_AUTHBUFFER {
+    required string signature = 1; // qcloud sig with tea encrpy than encode base64
+}
+
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_QUERY_PACKAGE {
+    required int32 id = 1; // shop id or package id
+    optional int32 page = 2; // if gt than max_page return empty items
+    optional int32 per_page = 3 [default = 10];
+    optional int32 max_page = 4;
+    repeated op_gameconfig.Item items = 5;
+}
+
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_SHOW_EFFECT {
+    repeated int32 id = 1;
+}
+
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_SYNC_TIME {
+    required double client_start_ts = 1;
+    required double server_receive_ts = 2;
+    required double server_send_ts = 3;
+}
+
+//pyr end
+
+// editor
+
+message OP_EDITOR_REQ_CLIENT_SET_EDITOR_MODE {
+    required string mode = 1;
+    optional string type = 2;
+}
+
+
+message OP_EDITOR_REQ_CLIENT_ADD_ELEMENT {
+    required Element element = 1;
+}
+
+message Terrain {
+    optional int32 id = 11;
+    required string type = 2;
+    optional string name = 3;
+    optional string des = 4;
+    optional int32 z = 5;
+    repeated op_gameconfig_01.AnimationData animations = 6;
+    required string animation_name = 7;
+    optional int32 x = 9;
+    optional int32 y = 10;
+    optional op_gameconfig.Display display = 1;
+}
+
+
+message OP_EDITOR_REQ_CLIENT_ADD_TERRAIN {
+    required Terrain terrain = 1;
+    optional bool all = 3;
+}
+
+message OP_EDITOR_REQ_CLIENT_DELETE_ELEMENT {
+    required int32 id = 1;
+}
+
+message OP_EDITOR_REQ_CLIENT_DELETE_TERRAIN {
+    repeated int32 ids = 4;
+    required int32 x = 1;
+    required int32 y = 2;
+    optional bool all = 3;
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_REMOVE_TERRAIN {
+    repeated int32 ids = 1;
+    repeated op_def.PBPoint3f position = 2;
+}
+
+message OP_EDITOR_REQ_CLIENT_MOUSE_FOLLOW {
+    optional op_gameconfig.Display display = 1;
+    optional op_gameconfig_01.AnimationData animation = 2;
+}
+
+
+message OP_EDITOR_REQ_CLIENT_SELECT_ELEMENT {
+    required int32 id = 1;
+}
+
+
+message OP_EDITOR_REQ_CLIENT_FIXED_TO_ELEMENT {
+    required int32 id = 1;
+}
+
+
+message OP_EDITOR_REQ_CLIENT_SYNC_ELEMENT {
+    repeated Element element = 1;
+}
+
+
+message OP_EDITOR_REQ_CLIENT_ALIGN_GRID {
+    required bool align = 1;
+}
+
+message OP_EDITOR_REQ_CLIENT_VISIBLE_GRID {
+    required bool visible = 1;
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_SYNC_USER_BALANCE {
+    optional double tu_ding = 1;
+    optional double qing_song_tang = 2;
+    optional double gold = 3;
+}
+
+// editor end
+
+// new Proto 2019.08.26
+
+// 流程
+// 客户端游戏创建完成后会同步新增物件/人与旧id之间的注册信息
+// 并且同步有变更的物件当前状态
+// 之后运行时，是添加ADD_OBJECT 同步SYNC_OBJECT 删除逻辑DELETE_OBJECT
+// 运行时 也会动态添加 BIND_ID信息
+
+// 结构体
+message BindID {
+    required int32 id = 1;
+    optional int32 bind_id = 2; // repeated?
+}
+
+
+
+// 关于客户端无法从pi内获取的资源，获取规则
+// 当Sprite第一次被添加时，会校验是否已经加载过
+// 若已经加载过，则不会在发送动画资源(包含avatar，frames等）
+// 如果客户端因为某些原因（缓存资源被清除等），可以通过OP_REQ_VIRTUAL_WORLD_QUERY_SPRITE_RESOURCE协议强制获取sprite资源
+// 请求后将服务端返回带有资源的OP_VIRTUAL_WORLD_REQ_CLIENT_SYNC_SPRITE消息作为回应
+message Sprite {
+    required int32 id = 1;
+    optional op_def.PBPoint3f point3f = 2;
+    optional op_gameconfig.Avatar avatar = 3;
+    optional string current_animation_name = 4;
+    optional op_def.Direction direction = 5; //动画朝向, 默认3,即面向玩家. 动画
+    optional string nickname = 6;
+    repeated op_def.BadgeCard display_badge_cards = 7;
+    optional int32 opacity = 8 [default=100]; // [0-100] 0为透明
+    optional int32 bind_id = 9;
+    repeated op_gameconfig_01.AnimationData animations = 10;
+    optional op_gameconfig.Display display = 11;
+    optional string sn = 12;
+    optional string version = 13;
+    repeated op_def.StrPair animation_registration_map = 14;
+    repeated op_def.StrPair attrs = 15;
+    optional bool is_moss = 16;
+    repeated int32  mount_sprites = 17; // 如果该位置不存在sprite将用0补全
+    optional float speed = 18;
+    optional uint32 title_mask = 19; // op_def.TitleMask.TQ_NickName << 16; 后16位由用户定义
+    optional int32 layer = 20;
+}
+
+
+message SpriteModifyResult
+{
+    required int32 id = 1;
+    optional op_def.PBPoint3f point3f = 2;
+    optional string current_animation_name = 4;
+    optional op_def.Direction direction = 5; //动画朝向, 默认3,即面向玩家. 动画
+    optional string sn = 6;
+    optional int32 command_mask = 7; // 0xffff代表删除, 0x0001代表新增, 0x0002代表修改,  删除操作高于所有, 即假定已经收回的物件 重新摆放出来是新的id
+}
+
+
+// 消息
+// BIND_ID，由BIND_ID注册Object之间的关系， （暂无卸载注册关系需求）
+// Object后续变动由sync消息同步
+// 添加ADD_SPRITE 单纯同步id 以及位置信息
+// 在镜头内删除DELETE_SPRITE 单纯删除id，但是注册关系保留，下次直接由ADD_SPRITE添加
+message OP_VIRTUAL_WORLD_REQ_CLIENT_SYNC_SPRITE {
+    repeated Sprite sprites = 1;
+    optional op_def.NodeType node_type = 2;
+    optional op_def.OpCommand command = 3[default=OP_COMMAND_PATCH];
+    repeated string patch_keys = 4;
+}
+
+message OP_VIRTUAL_WORLD_REQ_CLIENT_ADD_SPRITE {
+    repeated Sprite sprites = 1;
+    optional op_def.NodeType node_type = 2;
+    optional op_def.Packet packet = 3;
+}
+
+message OP_VIRTUAL_WORLD_REQ_CLIENT_CURRENT_SCENE_ALL_SPRITE {
+    repeated Sprite sprites = 1;
+    optional op_def.NodeType node_type = 2;
+    optional op_def.Packet packet = 3;
+}
+
+message OP_VIRTUAL_WORLD_REQ_CLIENT_NOTICE_RELOAD_SCENE
+{
+    repeated Sprite sprites = 1;
+    optional op_def.NodeType node_type = 2;
+    optional op_def.Packet packet = 3;
+}
+
+
+message OP_VIRTUAL_WORLD_REQ_CLIENT_SYNC_ACTOR
+{
+    optional Actor actor = 1;
+}
+
+message OP_VIRTUAL_WORLD_REQ_CLIENT_DELETE_SPRITE {
+    repeated int32 ids = 1; // 消息只删除场景中的物件，并不清除物件的bind关系， 在镜头中移除后下次不会再发送bind消息，直接由ADD_OBJECT添加
+    optional op_def.NodeType node_type = 2;
+}
+
+
+message OP_VIRTUAL_WORLD_REQ_CLIENT_ADJUST_POSITION
+{
+    repeated Sprite sprite_positions = 1;
+    optional op_def.NodeType node_type = 2;
+}
+
+
+message OP_VIRTUAL_WORLD_REQ_CLIENT_GOTO_ANOTHER_GAME
+{
+    required string game_id = 1;
+    required string virtual_world_id = 2;
+    optional int32 scene_id = 3;
+    optional op_def.PBPoint3f loc = 4;
+    optional int32 spawn_point_id = 5;
+    optional string world_id = 6;
+}
+
+
+message OP_VIRTUAL_WORLD_REQ_CLIENT_SET_SPRITE_POSITION
+{
+    required int32 id = 1;
+    required op_def.PBPoint3f position = 2;
+    optional op_def.NodeType node_type = 3;
+}
+
+
+message OP_VIRTUAL_WORLD_REQ_CLIENT_CHANGE_TO_EDITOR_MODE {
+    required Actor actor = 1;
+    required Scene scene = 2;
+}
+
+
+message OP_EDITOR_REQ_CLIENT_CHANGE_TO_EDITOR_MODE
+{
+    required Actor actor = 1;
+    required Scene scene = 2;
+}
+
+message OP_VIRTUAL_WORLD_REQ_CLIENT_MOUSE_SELECTED_SPRITE
+{
+    required Sprite sprite  = 1;
+    optional op_def.NodeType node_type = 2;
+    optional bool is_moss = 3;
+    optional int32 key = 4;
+}
+
+message OP_EDITOR_REQ_CLIENT_FETCH_SPRITE
+{
+    repeated int32 ids = 1;
+    optional op_def.NodeType node_type = 2;
+}
+
+message OP_EDITOR_REQ_CLIENT_MOUSE_SELECTED_SPRITE
+{
+    required Sprite sprite = 1;
+    optional op_def.NodeType node_type = 2;
+    optional bool is_moss = 3;
+    optional int32 key = 4;
+}
+
+message OP_EDITOR_REQ_CLIENT_CREATE_SPRITE
+{
+    repeated Sprite sprites = 1;
+    optional op_def.NodeType node_type = 2;
+}
+
+message OP_EDITOR_REQ_CLIENT_DELETE_SPRITE
+{
+    repeated int32 ids = 1;
+    optional op_def.NodeType node_type = 2;
+}
+
+
+message OP_EDITOR_REQ_CLIENT_SYNC_SPRITE
+{
+    repeated Sprite sprites = 1;
+    optional op_def.NodeType node_type = 2;
+}
+
+message OP_EDITOR_REQ_CLIENT_ADD_SPRITES_WITH_LOCS {
+    repeated op_def.MossMetaData locs = 1;
+    optional op_def.NodeType node_type = 2;
+    optional op_def.Packet packet = 3;
+}
+
+
+message OP_EDITOR_REQ_CLIENT_DELETE_SPRITES_WITH_LOCS {
+    repeated op_def.MossMetaData locs = 1;
+    optional op_def.NodeType node_type = 2;
+}
+
+
+message OP_EDITOR_REQ_CLIENT_ADD_MOSSES {
+    repeated op_def.MossMetaData locs = 1;
+}
+
+message OP_EDITOR_REQ_CLIENT_DELETE_MOSSES {
+    repeated int32 ids = 1;
+}
+
+message OP_EDITOR_REQ_CLIENT_SYNC_MOSSES {
+    repeated op_def.MossMetaData locs = 1;
+}
+
+message OP_EDITOR_REQ_CLIENT_ADD_SCENERY {
+    required int32 id = 1;
+    required op_def.StrArrays uris = 2;
+    required int32 depth = 3;
+    optional op_def.PBPoint2f offset = 4;
+    optional float speed = 5;
+    optional int32 fit = 6;
+    optional int32 height = 7;
+    optional int32 width = 8;
+}
+
+message OP_EDITOR_REQ_CLIENT_DELETE_SCENERY {
+    repeated int32 ids = 1;
+}
+
+message OP_EDITOR_REQ_CLIENT_UPDATE_SCENERY {
+    required int32 id = 1;
+    required op_def.StrArrays uris = 2;
+    required int32 depth = 3;
+    optional op_def.PBPoint2f offset = 4;
+    optional float speed = 5;
+    optional int32 fit = 6;
+    optional int32 height = 7;
+    optional int32 width = 8;
+}
+
+message OP_EDITOR_REQ_CLIENT_FETCH_SCENERY {
+    required int32 id = 1;
+}
+
+message OP_VIRTUAL_WORLD_REQ_CLIENT_SET_CAMERA_FOLLOW
+{
+    optional int32 id = 1;
+    optional string effect = 2;
+    optional op_def.PBPoint2f pos = 3; // 有id就没pos有pos就没id,hasOwnProperty判断有没有
+}
+
+
+message OP_VIRTUAL_WORLD_REQ_CLIENT_CHANGE_SPRITE_ANIMATION {
+    repeated int32 ids = 1;  // 需要修改动画组的sprite的id
+    repeated ChangeAnimation change_animation = 2; // 包含多个动作, 动作按序列顺序执行,当所有动作执行完毕后,默认回到idle, loop为播放次数,默认为1,-1代表无限播放直到下一个动作,打断该动作.动画组播放完毕之后进入idle
+    optional bool addToQueue = 3[default=false]; // 是否加入队列顺序执行, true将加入顺序加入队列中执行,false将清空之前队列内容,使用当前动作组覆盖执行
+    optional op_def.NodeType node_type = 4;
+    // optional bool need_report = 4[false]; // 在动画结束时是否需要通知服务端
+    // optional int32 id = 5;  // 通知id
+}
+
+//// 客户端通知服务端某一动作执行完毕
+// message OP_CLIENT_RES_VIRTUAL_WORLD_FINISH_SPRITE_ANIMATION
+//{
+//    required string animation_name = 1; // mining, 若animation触发时为播放3次则只在3次都播放完毕时发送该协议
+//}
+
+
+message OP_VIRTUAL_WORLD_REQ_CLIENT_MOVE_SPRITE {
+    repeated MoveData move_data = 1;
+    optional op_def.NodeType node_type = 2;
+}
+
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_EDIT_MODE_SELECTED_SPRITE
+{
+    required Sprite sprite = 1;
+    optional op_def.NodeType node_type = 2;
+}
+
+
+message PKT_SUIT_GROUP
+{
+    repeated CountablePackageItem avatar_suit = 1;
+}
+
+message OP_VIRTUAL_WORLD_REQ_CLIENT_SHOW_CREATE_ROLE_UI
+{
+    required op_gameconfig_01.Text text = 1;
+    repeated op_gameconfig.Avatar avatars = 2;
+    required op_gameconfig_01.Button button = 3;
+    repeated PKT_SUIT_GROUP avatar_suits = 4;
+}
+
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_CREATE_ROLE_GENERATE_NEW_NAME
+{
+    required string name = 1;
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_CREATE_ROLE_ERROR_MESSAGE
+{
+    required string error_msg = 1;
+}
+
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_GET_MARKET_CATEGORIES
+{
+    repeated op_def.MarketCategory market_category = 1;
+    optional string market_name = 2;
+}
+
+message MarketCommodity
+{
+    required string id = 1;
+    optional string name = 2;
+    optional string des = 3;
+    optional string icon = 4;
+    repeated op_gameconfig.Price price = 5;
+    optional string category = 6;
+    optional int32 remain_number = 7;
+    optional int32 each_purchase_number = 8[default=1];
+    optional string source = 9;
+    optional string short_name = 10;
+    repeated op_pkt_def.PKT_CompareValue require_values = 11;
+    repeated op_pkt_def.PKT_CompareValue affect_values = 12;
+    optional int32 limit = 13;
+    optional int32 remain = 14;
+    optional op_pkt_def.PKT_MANOR_COMMODITY_STATE manor_state = 15;
+    optional string sn = 16;
+    optional string suit_type = 17;
+    optional string tag = 18;
+    optional string version = 19;
+    optional string slot = 20;
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_MARKET_QUERY
+{
+    optional int32 page = 1;
+    optional int32 per_page = 2;
+    optional int32 max_page = 3;
+    optional string category = 4;
+    optional string subcategory = 5;
+    repeated MarketCommodity commodities = 6;
+    optional string market_name = 7;
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_MARKET_QUERY_COMMODITY_RESOURCE
+{
+    required string id = 1;
+    optional string category = 2;
+    repeated op_gameconfig_01.AnimationData animations = 3;
+    optional op_gameconfig.Display display = 4;
+    optional op_gameconfig.Avatar avatar = 5;
+    optional string market_name = 6;
+}
+
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_MARKET_QUERY_PACKAGE_ITEM_RESOURCE
+{
+    required string id = 1;
+    repeated op_gameconfig_01.AnimationData animations = 2;
+    optional op_gameconfig.Display display = 3;
+    optional op_gameconfig.Avatar avatar = 4;
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_EDIT_MODE_ADD_SPRITE_ERROR
+{
+    required int32 id = 1;
+    optional op_def.NodeType node_type = 2;
+    optional string reason = 3;
+}
+
+
+message MovePoint
+{
+    required op_def.PBPoint3f point3f = 1;
+    optional double timestemp = 2;
+}
+
+
+message OP_VIRTUAL_WORLD_REQ_CLIENT_MOVE_SPRITE_BY_PATH
+{
+    required int32 id = 1;
+    optional op_def.NodeType node_type = 2;
+    repeated MovePoint path = 3;
+    optional int32 time_span = 4; // 时间间隔，根据发包间隔外加预计网络延时决定
+    optional double timestemp = 5;
+    optional op_def.PathReachableStatus path_status = 6;
+    optional op_def.PBPoint3f target_pos = 7;
+}
+
+
+message OP_VIRTUAL_WORLD_REQ_CLIENT_UNWALKABLE_BIT_MAP
+{
+    repeated op_def.IntArray intArray = 1;
+}
+
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_EDIT_MODE_GET_SPAWN_POINT
+{
+    required op_def.PBPoint3f spawn_point = 1;
+}
+
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_EDIT_MODE_UPDATE_ROOM_INFO
+{
+    required string room_id = 1;
+    optional string name = 2;
+    optional string password = 3;
+    optional op_def.EditModeRoomPrivacy privacy = 4;
+    optional string owner_name = 5;
+    optional int32 player_count = 6;
+    optional op_pkt_def.PKT_Level room_level = 7;
+    optional string room_type = 8;
+    optional int32 praise = 9;     // 点赞数量
+    optional bool has_praised = 10; // 是否已经点赞
+    optional double competitiveness = 11;
+    //    optional double turnover = 12;   // 每日营业额
+    optional double popularity = 13;   // 热度
+    optional op_pkt_def.PKT_Property turnover_prop = 14;
+    optional double undepreciated = 15;
+    optional bool opening_party = 16;
+    optional string owner_id = 17; // 用于判断是否是自己的房间
+    optional string description = 18; // 派对的描述
+}
+
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_EDIT_MODE_ROOM_INFO
+{
+    required string room_id = 1;
+    optional string name = 2;
+    optional string password = 3;
+    optional op_def.EditModeRoomPrivacy privacy = 4;
+    optional string owner_name = 5;
+    optional int32 player_count = 6;
+    optional op_pkt_def.PKT_Level room_level = 7;
+    optional string room_type = 8;
+    optional int32 praise = 9;     // 点赞数量
+    optional bool has_praised = 10; // 是否已经点赞
+    optional double competitiveness = 11;
+//    optional double turnover = 12;   // 每日营业额
+    optional double popularity = 13;   // 热度
+    optional op_pkt_def.PKT_Property turnover_prop = 14;
+    optional double undepreciated = 15;
+    optional bool opening_party = 16;
+    optional string owner_id = 17; // 用于判断是否是自己的房间
+    optional string description = 18; // 派对的描述
+}
+
+
+message EditModeRoom
+{
+    required string room_id = 1;
+    optional string game_id = 2;
+    optional string name = 3;
+    optional int32 player_count = 4;
+    optional op_def.EditModeRoomPrivacy privacy = 5;
+    optional op_pkt_def.PKT_Level room_level = 6;
+    optional double savings = 7;    // 存储额
+    optional double competitiveness = 8;
+    optional double turnover = 9;   // 每日营业额
+    optional string industry = 10;
+    optional string store_type = 11;
+    optional double popularity = 12;   // 热度
+    optional double praise = 13;       // 好评
+    optional string owner_name = 14;
+    optional int32 focus = 15;
+    optional op_pkt_def.PKT_Property topic = 16;
+    optional int32 manor_count = 17;
+    optional int32 manor_limit = 18;
+    optional int32 street_id = 19;
+    optional op_def.RoomTypeEnum room_type = 20;
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_EDIT_MODE_ROOM_LIST
+{
+    repeated EditModeRoom popular_rooms = 1;
+    repeated EditModeRoom player_rooms = 2;
+    optional int32 page = 3;
+    optional int32 per_page = 4;
+    optional int32 max_page = 5;
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_STREET_LIST
+{
+    optional int32 page = 1;
+    optional int32 per_page = 2;
+    optional int32 max_page = 3;
+    repeated EditModeRoom street = 4;
+
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_EDIT_MODE_ROTATE_SPRITE
+{
+    repeated int32 ids = 1;
+    required ChangeAnimation animation = 2;
+}
+
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_EDIT_MODE_ENTER_ROOM
+{
+    required string room_id = 1;
+    optional op_def.EditModeEnterRoomResult result = 2;
+    optional string msg = 3;
+    optional string game_id = 4;
+}
+
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_EDIT_MODE_ADD_SPRITE_BY_TYPE
+{
+    required int32 id = 1;
+    optional op_def.NodeType node_type = 2;
+    optional int32 remain_count = 3;
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_EDIT_MODE_ADD_SINGLE_SPRITE_BY_TYPE
+{
+    required int32 id = 1;
+    optional op_def.NodeType node_type = 2;
+    optional int32 remain_count = 3;
+    repeated Sprite added_sprites = 4;
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_EDIT_MODE_GET_PLAYER_ENTER_ROOM_HISTORY
+{
+    repeated EditModeRoom self_rooms = 1;
+    repeated EditModeRoom history_rooms = 2;
+}
+
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_EDIT_MODE_GET_PACKAGE_CATEGORIES
+{
+    required op_pkt_def.PKT_PackageType category = 1;
+    repeated op_def.StrPair subcategory = 2;
+}
+
+message CountablePackageItem
+{
+    required string id = 1;
+    required int32 count = 2;
+    optional string name = 3;  // 道具名称
+    optional string des  = 4;
+    optional op_gameconfig.Display display = 5; // 背包物件贴图
+    optional string source = 6;
+    optional string short_name = 7;
+    optional string category = 8;
+    optional string subcategory = 9;
+    optional op_gameconfig.Price selling_price = 10;  // 售价
+    optional bool tradable = 11[default=false];   // 是否可以与玩家交易
+    optional bool recyclable = 12[default=false]; // 是否可被系统回收
+    optional bool executable = 13[default=false]; // 是否可以使用
+    optional string quality = 14;   // 品质
+    optional int32 needed_count = 15;  // 所需数量, 例如 配方中需要的数量
+    optional string indexId = 16;
+    optional op_gameconfig.Avatar avatar = 17;
+    optional op_pkt_def.PKT_Subscript right_subscript = 18[default=PKT_SUBSCRIPT_UNSET]; // 右角标
+    optional string use_button_name = 19[default="使用"];
+    optional int32 latest_use = 20;   // 最后使用时间戳
+    optional int32 recommended = 21;  // 推荐系数 由策划提供，推荐值越高，排位越靠前，具体以相应ui文档为准
+    optional int32 once_use_limit = 22[default=-1]; // 单次使用上限 -1表示无上限
+    repeated op_gameconfig_01.AnimationData animations = 23;
+    optional op_gameconfig.Display animation_display = 24; // 动画图集
+    optional op_def.Range count_range = 25;
+    optional int32 expired_time = 26;
+    repeated op_pkt_def.PKT_CompareValue require_values = 27;
+    repeated op_pkt_def.PKT_CompareValue affect_values = 28;
+    optional string suit_type = 29;
+    optional string sn = 30;
+    optional string tag = 31;
+    optional string version = 32;
+    optional string slot = 33;
+    optional int32 rarity = 34;
+    optional int32 grade = 35;
+    optional string code = 36;
+    optional int32 added_timestamp = 37; // 最后加入背包的时间
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_EDIT_MODE_QUERY_EDIT_PACKAGE
+{
+    optional int32 page = 1;
+    optional int32 per_page = 2;
+    optional int32 max_page = 3;
+    optional op_pkt_def.PKT_PackageType category = 4;
+    optional string subcategory = 5;
+    repeated CountablePackageItem items = 6;
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_MARKET_QUERY_PACKAGE
+{
+    optional int32 page = 1;
+    optional int32 per_page = 2;
+    optional int32 max_page = 3;
+    optional op_pkt_def.PKT_PackageType category = 4;
+    optional string subcategory = 5;
+    repeated CountablePackageItem items = 6;
+}
+
+
+message  OP_VIRTUAL_WORLD_REQ_CLIENT_SHOW_INTERACTIVE_BUBBLE
+{
+    required int32 id = 1;
+    required int32 receiver_id = 2;
+    optional int32 duration = 3[default=-1]; // 存续时间,单位毫秒,-1代表无限长
+    optional op_gameconfig.Display display = 4;
+}
+
+
+message OP_VIRTUAL_WORDL_REQ_CLIENT_REMOVE_INTERACTIVE_BUBBLE
+{
+    repeated int32 ids = 1;
+}
+
+message OP_VIRTUAL_WORLD_REQ_CLIENT_MINING_MODE_SHOW_REWARD_PACKAGE
+{
+    repeated CountablePackageItem items = 1;
+}
+
+// 游戏音效控制
+// 收到播放音效的消息后，前端程序会查找 source_id 对应的对象是否存在一个类型为media的Attribute，并播放此Attribute对应的音频资源
+// 注意：前端需要预加载mediaAttr，不然在收到消息后再加载会有延迟。
+message OP_VIRTUAL_WORLD_RES_CLIENT_SOUND_CTL
+{
+    required int32 scope = 1; // 音效层级：背景音（场景级别），舞台音（物件级别），IO音（UI级别），应当在游戏前后端统一制定层级枚举。
+    optional int32 source_id = 2; // 声音源, 场景id、物件id、ui的id等等游戏对象的id
+    required string sound_key = 3; // 音效资源的key值, 请参阅 op_gameconfig_01.Attribute.media
+    optional bool loop = 4; // 循环播放信标
+    optional int32 delay = 5; // 延迟播放，单位ms
+    optional int32 command = 6[default=1]; // 操作模式 1: 播放，2: 停止
+}
+// 音效设定
+message OP_VIRTUAL_WORLD_RES_CLIENT_SOUND_SETTING
+{
+    repeated bool scope_mute = 1; // 一个bool数组，每个值对应一个值对应一个层级的音效是否静音。顺序应当和OP_VIRTUAL_WORLD_RES_CLIENT_SOUND_CTL.scope枚举相同
+}
+
+message MiningEquipment
+{
+    required string id = 1;                  //
+    optional string name = 2;               // 名称
+    optional string description = 3;       // 说明
+    repeated string buff_display_names = 4;       // buff的说明展示,可能会有多个
+    repeated string condition_display_names = 5; // 可能存在需要条件不能购买的情况
+    optional op_gameconfig.Price price = 6;     // 价格
+    optional bool owned = 7;                   // 是否已经拥有
+    optional bool selected = 8;               // 当前装备
+    optional bool qualified = 9;             // 是否可以购买
+    optional op_gameconfig.Display display = 10;  // 展示资源
+}
+
+message MiningEquipmenetArray
+{
+    required string equipment_type = 1; // 矿镐 or 矿石车
+    repeated MiningEquipment mine_equipments = 2;
+}
+
+// 服务端通知客户端 展示矿工装备选择面板
+// 装备存在owned属性以及condition_display_names属性,若装备owned属性为false则需要展示condition_display_names否者展示勾选按钮即可
+// 装备不一定需要金币购买可能需要等级或其他限制解锁
+message OP_VIRTUAL_WORLD_REQ_CLIENT_MINING_MODE_SHOW_SELECT_EQUIPMENT_PANEL
+{
+    repeated MiningEquipmenetArray mine_equipments = 1;
+}
+
+// 服务端返回激活的装备
+message OP_VIRTUAL_WORLD_RES_CLIENT_MINING_MODE_ACTIVE_EQUIPMENT
+{
+    optional MiningEquipment mine_equipment = 1;
+}
+
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_MINING_MODE_QUERY_MINE_PACKAGE
+{
+    repeated op_def.StrPair subcategories = 1;
+    optional string subcategory = 2;
+    repeated CountablePackageItem items = 3;
+    optional int32 limit = 4;
+}
+
+message OP_VIRTUAL_WORLD_REQ_CLIENT_SHOW_REWARD_TIPS
+{
+    required op_gameconfig.Display display = 1;
+    required string text = 2;
+    optional string item_id = 3;
+}
+
+message OP_VIRTUAL_WORLD_REQ_CLIENT_SHOW_HIGH_QUALITY_REWARD_TIPS
+{
+    repeated CountablePackageItem list = 1;
+    optional string text = 2;
+}
+
+message OP_VIRTUAL_WORLD_REQ_CLIENT_SHOW_BLING_PANEL
+{
+    required int32 panel_id = 1; // 面板 ID (目前就一个)
+    required string line1 = 2; // 第一行字
+    optional string line2 = 3; // 第二行字
+}
+
+message OP_VIRTUAL_WORLD_REQ_CLIENT_PKT_PLAYER_INFO
+{
+    optional int32 coin = 1;
+    optional int32 diamond = 2;
+    optional op_pkt_def.PKT_Level level = 3;
+    optional op_def.ValueBar energy = 4;
+    optional op_def.ValueBar workChance = 9;
+    optional op_def.OpCommand command = 5[default=OP_COMMAND_PATCH];
+    repeated EditModeRoom rooms = 6;
+    optional CountablePackageItem handheld = 7;
+    repeated op_pkt_def.PKT_Property properties = 8;
+    optional string nickname = 10; // 昵称
+    optional string cid = 11;
+    optional int32 picaStar = 12; // 皮卡星
+    optional int32 investigateChance = 13;
+}
+
+message OP_VIRTUAL_WORLD_REQ_CLIENT_PKT_GUIDE_DATA
+{
+    repeated int32 finished_guide = 1; // 引导状态
+}
+
+// 服务端返回客户端玩家自身信息
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_SELF_PLAYER_INFO  // 我的信息
+{
+    optional int32 id = 1; // sprite id
+    optional string cid = 2; // 玩家角色id, 展示
+    optional int32 like = 3[default=0]; // 点赞
+    optional op_pkt_def.PKT_Avatar current_avatar = 4;
+    optional string nickname = 5; // 昵称
+    optional op_pkt_def.PKT_Level level = 6; // 等级
+    optional string current_title = 7; // 当前称号
+    repeated op_pkt_def.PKT_Skill life_skills = 8;
+    repeated op_pkt_def.PKT_Badge badges = 9;  // 徽章
+    repeated op_pkt_def.PKT_Title titles = 10; // 称号
+    repeated op_pkt_def.PKT_Property properties = 11;
+    optional CountablePackageItem handheld = 12;
+    repeated CountablePackageItem avatar_suit = 14;
+}
+
+// 服务端返回客户端其他玩家信息
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_ANOTHER_PLAYER_INFO // 他人信息
+{
+    optional int32 id = 1; // sprite id
+    optional string cid = 2;  // 玩家角色id, 展示
+    optional int32 like = 3[default=0]; // 点赞
+    optional op_pkt_def.PKT_Avatar current_avatar = 4;
+    optional string nickname = 5; // 昵称
+    optional op_pkt_def.PKT_Level level = 6; // 等级
+    optional string current_title = 7; // 当前称号
+    repeated op_pkt_def.PKT_Skill life_skills = 8;
+    repeated op_pkt_def.PKT_Badge badges = 9;  // 徽章
+    repeated op_pkt_def.PKT_Title titles = 11; // 称号
+    repeated string room_ids = 12; // 房间列表 功能待定 字段预留
+    optional string remark = 13; // 备注名
+    optional bool friend = 14; // 是否为好友
+    repeated op_pkt_def.PKT_Property properties = 15;
+    repeated CountablePackageItem avatar_suit = 16;
+}
+
+
+message PKT_CRAFT_SKILL
+{
+    optional op_pkt_def.PKT_Skill skill = 1;
+    optional string product_name = 2; // 合成技能产物名称
+    optional string product_des = 3;  // 合成技能产物描述
+    optional string product_source = 4;  // 合成技能产物来源
+    repeated op_gameconfig_01.AnimationData product_animations = 5; // 合成技能产物动画
+    optional op_gameconfig.Display product_display = 6;  // 合成技能产物资源
+    optional op_gameconfig.Avatar product_avatar = 7; // 合成技能产物Avatar
+    repeated CountablePackageItem materials = 8;  // 配方原料
+    optional CountablePackageItem product = 9; // 合成产物
+}
+
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_CRAFT_SKILLS
+{
+    repeated PKT_CRAFT_SKILL skills = 1;
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_CRAFT_QUERY_FORMULA
+{
+    required string id = 1;  // 合成技能ID
+    optional string product_name = 2; // 合成技能产物名称
+    optional string product_des = 3;  // 合成技能产物描述
+    optional string product_source = 4;  // 合成技能产物来源
+    repeated op_gameconfig_01.AnimationData product_animations = 5; // 合成技能产物动画
+    optional op_gameconfig.Display product_display = 6;  // 合成技能产物资源
+    optional op_gameconfig.Avatar product_avatar = 7; // 合成技能产物Avatar
+    repeated CountablePackageItem materials = 8;  // 配方原料
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_RESET_AVATAR
+{
+    required op_gameconfig.Avatar avatar = 1;
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_CURRENT_DRESS_AVATAR_ITEM_ID
+{
+    repeated string avatar_item_ids = 1;
+}
+
+message PKT_Quest
+{
+    required string id = 1;
+    optional string name = 2;
+    optional string detail = 3; // 任务目标描述
+    optional op_gameconfig.Display display = 4;
+    optional op_pkt_def.PKT_Quest_Stage stage = 5[default=PKT_QUEST_STAGE_NOT_ACCEPTED]; // 任务状态
+    optional op_pkt_def.PKT_Quest_Type quest_type = 6; // 任务类型
+    repeated CountablePackageItem targets = 7; // 任务目标 展示 可能为空
+    repeated CountablePackageItem rewards = 8; // 任务奖励
+    optional int32 refresh_deadline = 9; // 刷新结束时间
+    optional int32 delivery_deadline = 10; // 订单任务送货结束时间
+    optional int32 cabin_type = 11;
+
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_QUERY_QUEST_LIST
+{
+    repeated PKT_Quest quests = 1; //
+}
+
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_QUERY_QUEST_DETAIL
+{
+    required PKT_Quest quest = 1;
+}
+
+// 新增服务端打开客户端商店面板协议
+message OP_VIRTUAL_WORLD_REQ_CLIENT_MARKET_SHOW_MARKET_BY_NAME
+{
+    optional string market_name = 1;
+}
+
+// 新增默认UI设定
+message OP_VIRTUAL_WORLD_REQ_CLIENT_PKT_REFRESH_ACTIVE_UI
+{
+    repeated op_pkt_def.PKT_UI ui = 1;// PICaMain.RoomInfo PlayerInfo Navigate Quest Map Market Package GoHome
+}
+
+message StateGroup
+{
+    required op_gameconfig_01.Node owner = 1;
+    repeated op_def.State state = 2;
+}
+
+message OP_VIRTUAL_WORLD_REQ_CLIENT_SYNC_STATE
+{
+    repeated StateGroup state_group = 1;
+}
+
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_UNLOCK_ELEMENT_REQUIREMENT
+{
+    repeated int32 ids = 1;    // unlock 对象
+    repeated CountablePackageItem materials = 2;  // 原料
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_TEAMBUILD_ELEMENT_REQUIREMENT
+{
+    repeated int32 ids = 1;    // unlock 对象
+    repeated CountablePackageItem materials = 2;  // 原料
+}
+
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_HANDHELD
+{
+    optional string current_handheld_id = 1;
+    repeated CountablePackageItem handheld = 2;
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_INDUSTRY_MODELS
+{
+    repeated op_pkt_def.PKT_INDUSTRY industry = 1;
+}
+
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_MY_STORE
+{
+    optional int32 store_limit = 1;
+    repeated EditModeRoom store_list = 2; //
+}
+
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_COMMERCIAL_STREET
+{
+    repeated EditModeRoom commercial_street = 1;
+}
+
+
+message MarketPlan
+{
+    optional string id = 1; // 计划id
+    repeated CountablePackageItem requirements = 2; // 所需物品
+    optional string des = 3; // 描述
+    optional string icon = 4;//  图标
+    optional string name = 5; // ,名称
+    optional string buff_des = 6; // 描述2 对应effect
+    optional string market_plan_type = 7; // 类型
+    optional int32 total_time = 8; // 总耗时 单位秒
+    optional int32 end_time = 9; // 结束时间 时间戳 单位秒
+}
+
+
+message MarketPlanPair
+{
+    optional string market_plan_type = 1; // 营销计划类型
+    optional MarketPlan market_plan = 2;
+}
+
+
+// 已经选择的营销计划
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_MARKET_PLAN
+{
+    repeated MarketPlanPair market_plan_pairs = 1;
+    optional string industry_background = 2;
+    optional string industry_des = 3;
+    optional string industry_buff_des = 4;
+}
+
+// 可供选择的营销计划
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_MARKET_PLAN_MODELS_BY_TYPE
+{
+    repeated MarketPlan market_plan = 1;
+}
+
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_QUERY_STORE_RANKING_LIST
+{
+    repeated op_pkt_def.PKT_RankChampion rank_champions = 2;
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_QUERY_STORE_RANKING_DETAIL
+{
+    optional string key = 1;
+    optional string type = 2;
+    repeated op_pkt_def.PKT_StoreRankItem stores = 3;
+    optional op_pkt_def.PKT_StoreRankItem player_store = 4;
+}
+
+message PKT_RewardStage
+{
+    optional uint32 start = 1; //  表示阶段闭区间 [1, 2] 表示1~2
+    optional uint32 end = 2; //
+    repeated CountablePackageItem rewards = 3;
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_QUERY_STORE_RANKING_REWARD
+{
+    repeated PKT_RewardStage reward_stage = 1;
+}
+
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_QUERY_STORE_ENTER_HISTORY
+{
+    repeated EditModeRoom history = 1;
+}
+
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_SYNC_PACKAGE
+{
+    optional op_pkt_def.PKT_PackageType package_name = 1;
+    repeated CountablePackageItem items = 2;
+    optional op_def.Packet packet = 3;
+    optional int32 limit = 4[default=-1];
+}
+
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_UPDATE_PACKAGE
+{
+    optional op_pkt_def.PKT_PackageType package_name = 1;
+    repeated CountablePackageItem items = 2;  // 服务器推送更新将在第一次PKT_SYNC_PACKAGE之后开始, 应为proto不能使用undefined的定义 需要删除的项目id为0
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_SEARCH_ROOM
+{
+    optional int32 page = 1;
+    optional int32 per_page = 2;
+    repeated EditModeRoom rooms = 3;
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_PLAYER_LIST
+{
+    repeated op_pkt_def.PKT_PlayerInfo player_infos = 1;
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_SEARCH_PLAYER
+{
+    repeated op_pkt_def.PKT_PlayerInfo player_infos = 1;
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_ORDER_LIST
+{
+    repeated PKT_Quest orders = 1; //
+    optional op_def.ValueBar royal_order_limit = 2;
+}
+
+
+message PKT_Progress
+{
+    optional int32 target_value = 1;
+    repeated CountablePackageItem rewards = 2;
+    optional bool received = 3;
+}
+
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_QUERY_PLAYER_PROGRESS
+{
+    optional int32 current_progress_value = 1;
+    repeated PKT_Progress steps = 2;
+    optional string name = 3;
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_JOB_LIST
+{
+    repeated PKT_Quest jobs = 1;
+    optional int32 times = 2;
+}
+
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_QUERY_ROOM_REFURBISH_REQUIREMENTS
+{
+    repeated CountablePackageItem requirements = 1;
+}
+
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_PARTY_LIST
+{
+    optional EditModeRoom hotel = 1;
+    optional EditModeRoom picatown = 2;
+    repeated EditModeRoom party = 3;
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_CREATE_PARTY_REQUIREMENTS
+{
+    repeated op_pkt_def.PKT_Property topics = 1;
+    optional int32 tickets_count = 2;
+    optional bool created = 3;
+    optional string name = 4;
+    optional string des = 5;
+    optional op_pkt_def.PKT_Property topic = 6;
+    optional int32 expired = 7;
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_PARTY_SEND_GIFT
+{
+    required string sender_id = 1;
+    required string sender_name = 2;
+    required string room_id = 3;
+    required string room_name = 4;
+    required string item_id = 5;
+    required int32 count = 6;
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_DRAW_RESULT {
+    repeated CountablePackageItem rewards = 1;  // 抽卡奖励
+    optional int32 star = 2; // 皮卡星奖励
+
+    optional DRAW_POOL_STATUS pool_update = 3; // 卡池更新
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_DRAW_STATUS_RESULT {
+    repeated DRAW_POOL_STATUS pools = 1; // 卡池列表
+}
+
+message DRAW_POOL_STATUS {
+    required string id = 1;       // 单抽/十连视为不同的卡池，常驻卡池为写死的固定 ID，活动卡池规则待定
+    required string token_id = 2; // 货币 ID
+    required int32 price = 3;    // 使用货币抽卡的价格
+    optional string alter_token_id = 4; // 代币 ID，比如漫游票
+    optional int32 draw_time = 5; // 需要 alterTokenId 的数量（同时也是抽卡的次数）
+    optional int32 next_free_time = 6; // 下次免费时间 (没有则不显示)
+
+    repeated PKT_Progress progress_award = 7; // 累积奖励（只有部分奖池有）
+    optional int32 progress = 8;    // 累计奖励进度
+    optional int32 progress_expire_time = 9;  // 累计进度清零时间
+
+    optional int32 unitPrice = 10; // 代币不够的话单独购买的价格
+    optional int32 picaStarCount = 11; // 获得皮卡星数量
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_COMBINE_RESULT {
+    required CountablePackageItem reward = 1;  // 合成结果
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_FORGE_RESULT {
+    required CountablePackageItem reward = 1;  // 重铸结果
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_FORGE_LIST_RESULT {
+    repeated CountablePackageItem list = 1;  
+}
+
+message PKT_EXPLORE_LEVEL_DATA {
+    required int32 level_id = 1;
+    required int32 progress = 2; // 123 表示 1 颗星, 第二颗星 23% 的进度
+
+    // 下面的将来从配置读
+    optional int32 chapter_id = 11;
+    optional string name = 12;
+    optional string image_path = 13;
+    optional int32 level_type = 14;
+    repeated CountablePackageItem clue_items = 15;
+    optional int32 required_player_level = 16;
+    optional string room_id = 17; // 配置表中的关卡 sn
+    optional int32 energy_cost = 18; // 消耗精力
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_EXPLORE_CHAPTER_PROGRESS {
+    repeated PKT_EXPLORE_CHAPTER_PROGRESS chapters = 1;
+        
+    optional int32 next_chapter_id = 11; // 关卡进度
+    optional int32 next_level_id  = 12;
+}
+
+message PKT_EXPLORE_CHAPTER_PROGRESS {
+    required int32 chapter_id = 1;
+    optional int32 progress = 2; // 
+}
+
+message PKT_EXPLORE_CHAPTER_DATA {
+    required int32 chapter_id = 1;
+    required int32 star_progress = 2;
+    optional bool award_taken = 3;
+
+    // 下面的将来从配置读
+    optional string name = 11;
+    optional string image_path = 12;
+    optional int32 total_star = 13;
+    optional CountablePackageItem award = 14; 
+    optional int32 required_player_level = 15;
+    optional string des = 16;
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_EXPLORE_SHOW_COUNTDOWN {
+    optional int32 combo = 1;   // 连击数
+    optional int32 seconds = 2; // 倒计时秒数
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_QUERY_CHAPTER_RESULT {
+    required PKT_EXPLORE_CHAPTER_DATA chapter = 1;
+    repeated PKT_EXPLORE_LEVEL_DATA levels = 2;
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_EXPLORE_REQUIRE_LIST {
+    repeated string list = 1;
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_EXPLORE_CLUE_DATA {
+    required int32 star = 1;
+    optional CountablePackageItem item = 2;
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_EXPLORE_SUMMARY {
+    required int32 level_id = 1;
+    optional int32 previous_progress = 2; // 之前的关卡进度百分比
+    optional int32 latest_progress = 3;   // 现在的关卡进度百分比
+    optional int32 point_base = 4;
+    optional int32 point_combo = 5;
+    optional int32 point_time = 6;
+    optional int32 point_accuracy = 7;
+    optional int32 point_hint = 8;
+
+    repeated CountablePackageItem rewards = 9;
+
+    // 以下的之后从配置读
+    repeated OP_VIRTUAL_WORLD_RES_CLIENT_PKT_EXPLORE_CLUE_DATA clue = 21; // 可能获得的剧情道具
+}
+
+message FurnitureRequirements
+{
+    optional string sn = 1;
+    repeated CountablePackageItem requirements = 2;
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_REQUIRE_FURNITURE_UNFROZEN_REQUIREMENTS
+{
+    repeated FurnitureRequirements furniture_requirements = 1;
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_TEST
+{
+    optional int32 should_be_null = 1;
+    optional int32 should_be_zero = 2;
+    optional string should_be_null_string = 3;
+    optional string should_be_empty_string = 4;
+    optional bool should_be_null_bool = 5;
+    optional bool should_be_false = 6;
+    optional int32 default_one = 7[default = 1];
+    optional int32 default_one_set_one = 8[default = 1];
+}
+
+// server 设置位置
+message OP_VIRTUAL_WORLD_RES_CLIENT_SET_POSITION
+{
+    repeated Sprite sprites = 1;
+}
+
+// server 强制停止移动
+message OP_VIRTUAL_WORLD_RES_CLIENT_STOP
+{
+    repeated Sprite sprites = 1;
+}
+
+
+message SpriteIntPair
+{
+    required int32 key = 1;
+    optional Sprite sprite = 2;
+}
+
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_TERRAIN_COLLECTION
+{
+    optional op_gameconfig_01.TerrainCollection terrain = 1;
+    repeated SpriteIntPair sprite_sample = 2;
+}
+
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_QUERY_CONFIGS
+{
+    required op_def.ResponseStatus status = 1;
+    optional string data = 2;
+}
+
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_ACTIVE_SPRITE
+{
+    required int32 sprite_id  = 1;  // 由谁触发
+    optional int32 target_id = 2;  // 和什么交互
+    optional string param = 3;
+}
+
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_DRESS_UP_AVATAR
+{
+    optional string suit_type = 1;
+}
+
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_ACTIVE_SPRITE_END
+{
+    optional int32 sprite_id = 1;   // 由谁触发
+    optional int32 target_id = 2;  // 和什么交互
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_CURRENT_ROOM_PLAYER_LIST
+{
+    repeated op_pkt_def.PKT_PlayerInfo player_infos = 1;
+}
+
+
+message OP_VIRTUAL_WORLD_REQ_CLIENT_GAME_MODE
+{
+    optional op_def.AvatarStyle avatar_style = 1;
+}
+
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_QUERY_QUEST_GROUP
+{
+    optional string id = 1;
+    optional string name = 2;
+    optional string des = 3;
+    repeated PKT_Quest quests = 4;
+    optional CountablePackageItem reward = 5;
+    optional bool rewards_received = 6;
+    optional op_pkt_def.PKT_Quest_Type quest_type = 7; // 任务类型
+    optional int32 progress = 8; // 组进度
+}
+
+
+message OP_VIRTUAL_WORLD_REQ_CLIENT_PKT_SHOW_CREATE_ROLE_UI
+{
+    repeated CountablePackageItem avatars = 1;
+}
+
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_EDIT_MODEL_RESULT
+{
+    optional bool status = 1; // 是否成功
+    optional string msg = 2; // 描述
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_START_EDIT_MODEL
+{
+    optional bool status = 1; // 是否成功
+    optional string msg = 2; // 描述
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_LEVEL_UP {
+    required op_def.LevelUpType type = 1;
+    optional int32 value = 2;
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_ROOM_SHOW_GUIDE_TEXT {
+    repeated GUIDE_TEXT text = 1;
+}
+
+message GUIDE_TEXT {
+    required string text = 1;
+    optional int32 total_steps = 2;
+    optional int32 progress = 3; // progress == total_steps 则为已经完成
+}
+
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_MOVE_SPRITE
+{
+    repeated op_def.MovePath move_path = 1;
+}
+
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_SELF_ROOM_LIST
+{
+    optional op_def.RoomTypeEnum room_type = 1;
+    repeated EditModeRoom rooms = 2;
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_ROOM_LIST
+{
+    optional op_def.RoomTypeEnum room_type = 1;
+    repeated EditModeRoom rooms = 2;
+    optional int32 page = 3;
+    optional int32 per_page = 4;
+    optional int32 max_page = 5;
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_PKT_SHOP_DATA
+{
+    repeated op_gameconfig.ShopItem items = 1;
+}
+
+message PKT_GALLERY_ITEM
+{
+    required string id = 1;
+    required int32 status = 2; // 1: 灰，2: 完整
+}
+
+message PKT_MAIL_DATA
+{
+    required string id = 1;
+    optional string title = 2;
+    optional string content = 3;
+    repeated CountablePackageItem attachments = 4;
+    optional int32 sent_time = 5;
+    optional int32 expire_time = 6;
+    optional bool has_read = 7;
+    optional string sender_name = 8;
+    optional bool attach_taken = 9;
+}
+
+message OP_CLIENT_REQ_VIRTUAL_WORLD_PKT_UPDATE_GALLERY {
+    repeated PKT_GALLERY_ITEM list = 1;
+    optional bool to_notify = 2;
+    optional int32 reward1_next_index = 3; // 灰色进度奖励-下次领取的进度等级
+    optional int32 reward2_next_index = 4; // 闪亮进度奖励-下次领取的进度等级
+    optional int32 reward1_progress = 5;  // 灰色进度
+    optional int32 reward2_progress = 6; // 闪亮进度
+}
+
+message OP_CLIENT_REQ_VIRTUAL_WORLD_PKT_UPDATE_GALLERY_COLLECTION_DATA {
+    repeated int32 DoneMissionIdList = 1;//完成的收藏任务id
+}
+
+message OP_CLIENT_REQ_VIRTUAL_WORLD_PKT_UPDATE_MAILS_DATA{
+    repeated PKT_MAIL_DATA list = 1;//所有邮件信息
+    optional bool is_all = 2; // true: 所有邮件，false：新邮件
+}
+
+
+message OP_CLIENT_REQ_VIRTUAL_RED_DOT_STATUS{
+    repeated op_def.RedDotTypeEnum list = 1;
+}
+
+message OP_VIRTUAL_WORLD_REQ_CLIENT_TRIGGER_MOVE_SPRITE
+{
+    required int32 id = 1;
+    optional op_def.PBPoint3f velocity = 2; // 可为空,速度向量, 默认为物件速度的向量
+    optional double length = 3; // 可为空, 单位像素,默认为一秒内可移动距离?
+}
+
+message OP_VIRTUAL_WORLD_REQ_CLIENT_UNLOCK_DONE
+{
+    required int32 eid = 1; // 物件场景id
+    optional string config_id = 2;
+}
+
+message OP_VIRTUAL_WORLD_REQ_CLIENT_INVESTIGATE_SUCCESS {
+    required string id = 1; // 配置表id
+}
+
+
+message OP_VIRTUAL_WORLD_REQ_CLIENT_SHOW_PLACARD
+{
+    required string message = 1;
+    optional string c_param = 3; // 客户端用参数，例如展示样式
+}
+
+message OP_VIRTUAL_WORLD_RES_CLIENT_CUSTOM_PROTO
+{
+    required string msg_name = 1;
+    optional string cmd = 2;
+    optional bytes msg = 3;
+}
+
