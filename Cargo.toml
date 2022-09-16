@@ -9,41 +9,42 @@ repository = "https://github.com/akeboshi1/PhaserRust"
 wasm-opt = ["-Oz", "--enable-mutable-globals"]
 
 [lib]
+name = "rust_wasm"
 crate-type = ["cdylib"]
 path = "./src/lib.rs"
 
 [dependencies]
-wasm-bindgen = {version ="0.2.64",features = ["serde-serialize"]}
+wasm-bindgen = { version = "0.2.64", features = ["serde-serialize"] }
 wasm-bindgen-futures = "0.4.7"
 js-sys = "0.3.36"
 rand = "0.7.0"
 prost = "0.11.0"
-which     = "4.0"
-anyhow    = "1.0.53"
-protobuf = "^3.1.0"
-protobuf-parse = "^3.1.0"
-tempfile = "3"
+
+protobuf = { path = "./crates/protobuf" }
+protobuf-support = { path = "./crates/protobuf-support" }
+protobuf-parse = { path = "./crates/protobuf-parse" }
+
 [dependencies.web-sys]
 version = "^0.3.59"
 features = [
-  "BinaryType",
-  "Blob",
-  "ErrorEvent",
-  "FileReader",
-  "MessageEvent",
-  "ProgressEvent",
-  "DedicatedWorkerGlobalScope",
-  "WebSocket",
-  "console",
-  "XmlHttpRequest",
-  "XmlHttpRequestUpload",
-  "XmlHttpRequestResponseType",
-  "XmlHttpRequestEventTarget",
-  "EventListener",
-  "AudioContext",
-  'AudioDestinationNode',
-  'AudioNode',
-  'AudioParam',
-  "FormData",
-  "BlobPropertyBag"
+    "BinaryType",
+    "Blob",
+    "ErrorEvent",
+    "FileReader",
+    "MessageEvent",
+    "ProgressEvent",
+    "DedicatedWorkerGlobalScope",
+    "WebSocket",
+    "console",
+    "XmlHttpRequest",
+    "XmlHttpRequestUpload",
+    "XmlHttpRequestResponseType",
+    "XmlHttpRequestEventTarget",
+    "EventListener",
+    "AudioContext",
+    'AudioDestinationNode',
+    'AudioNode',
+    'AudioParam',
+    "FormData",
+    "BlobPropertyBag"
 ]

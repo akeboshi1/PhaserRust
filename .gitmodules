@@ -1,0 +1,3 @@
+[submodule "crates/which-rs"]
+	path = crates/which-rs
+	url = git@github.com:askdaddy/which-rs.git

@@ -5,7 +5,8 @@
   "license": "MIT",
   "scripts": {
     "serve": "webpack-dev-server --mode=development",
-    "build": "rimraf dist && node --max-old-space-size=4096 node_modules/webpack/bin/webpack.js --mode=development --output-path=./dist --progress"
+    "build": "rimraf dist && node --max-old-space-size=4096 node_modules/webpack/bin/webpack.js --mode=development --output-path=./dist --progress",
+    "build:wasm" :"cargo check && cargo build --target wasm32-wasi"
   },
   "browser": {
     "child_process": false,
