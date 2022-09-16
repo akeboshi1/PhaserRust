@@ -11,6 +11,7 @@ export class TestScene extends Phaser.Scene {
         this.load.setPath('assets/demos/');
         // this.load.image("test","assets/test.png");
         this.load.spine('spineboy', 'spineboy.json', 'spineboy.atlas');
+        this.load.atlas("cube","cube.png","cube.json");
     }
 
     create() {
@@ -21,7 +22,11 @@ export class TestScene extends Phaser.Scene {
 
         this.startAnim = 'idle'
 
+        const anims = this.anims.create({ key: 'cubeAnims',frames: this.anims.generateFrameNames('cube'),repeat:-1});
+        const sprite = this.make.sprite("cube",true).play("cubeAnims");
 		this.spineBoy = this.add.spine(400, 600, "spineboy", "idle", true);
+        const slot = this.spineBoy.findSlot("gun");
+        let att = slot.attachment;
 		this.cursors = this.input.keyboard.createCursorKeys()
         this.animationNames=[];
 		this.initializeAnimationsState(this.spineBoy);
