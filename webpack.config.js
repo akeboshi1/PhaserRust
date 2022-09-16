@@ -100,12 +100,12 @@ const renderConfig = Object.assign({}, commonConfig, {
             template: path.join(__dirname, "./index.html"),
             chunks: ["scripts"]
         }),
-        // new WasmPackPlugin({
-        //     crateDirectory: path.resolve(__dirname, "."),
-        //     withTypeScript: true,
-        //     outDir: path.resolve(__dirname, 'pkg'),
-        //     outName: "wasm"
-        // }),
+        new WasmPackPlugin({
+            crateDirectory: path.resolve(__dirname, "."),
+            withTypeScript: true,
+            outDir: path.resolve(__dirname, 'pkg'),
+            outName: "wasm"
+        }),
         new CopyWebpackPlugin({
             patterns: [
                 { from: "assets", to: "assets", toType: "dir" }

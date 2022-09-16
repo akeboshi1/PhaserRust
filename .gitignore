@@ -1,4 +1,5 @@
 /target
+.npmrc
 Cargo.lock
 dist/*
 wasm/Cargo.lock
