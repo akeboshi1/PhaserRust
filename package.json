@@ -33,6 +33,7 @@
     "@PixelPai/net-socket-packet": "git+ssh://git@code.apowo.com:PixelPai/net-socket-packet.git",
     "@opensource/wasmoon": "^1.14.2",
     "@types/emscripten": "^1.39.6",
+    "@types/offscreencanvas": "^2019.7.0",
     "git": "^0.1.5",
     "phaser": "^3.55.2",
     "pixelpai_proto": "git+ssh://git@code.apowo.com:PixelPai/pixelpai_proto.git#typescript",

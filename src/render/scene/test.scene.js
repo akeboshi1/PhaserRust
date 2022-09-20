@@ -26,6 +26,7 @@ export class TestScene extends Phaser.Scene {
         const sprite = this.make.sprite("cube",true).play("cubeAnims");
 		this.spineBoy = this.add.spine(400, 600, "spineboy", "idle", true);
         const slot = this.spineBoy.findSlot("gun");
+        // slot.setAttachment();
         let att = slot.attachment;
 		this.cursors = this.input.keyboard.createCursorKeys()
         this.animationNames=[];

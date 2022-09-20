@@ -9,7 +9,7 @@ onmessage = function (m) {
                     net.PBpacket.addProtocol(pixel[key]);
                 }
                 import("../../pkg/wasm").then(module => {
-                    module.testproto();
+                   // module.testproto();
                     const packet = new net.PBpacket(pixel.op_virtual_world.OPCODE._OP_CLIENT_REQ_VIRTUAL_WORLD_PKT_SYNC_PACKAGE);
                     const content = packet.content;
                     content.packageName = 1;
