@@ -7,11 +7,11 @@ export class TestScene extends Phaser.Scene {
         this.worker = data.worker;
     }
 
-    preload(){
+    preload() {
         this.load.setPath('assets/demos/');
         // this.load.image("test","assets/test.png");
         this.load.spine('spineboy', 'spineboy.json', 'spineboy.atlas');
-        this.load.atlas("cube","cube.png","cube.json");
+        this.load.atlas("cube", "cube.png", "cube.json");
     }
 
     create() {
@@ -22,25 +22,25 @@ export class TestScene extends Phaser.Scene {
 
         this.startAnim = 'idle'
 
-        const anims = this.anims.create({ key: 'cubeAnims',frames: this.anims.generateFrameNames('cube'),repeat:-1});
-        const sprite = this.make.sprite("cube",true).play("cubeAnims");
-		this.spineBoy = this.add.spine(400, 600, "spineboy", "idle", true);
+        const anims = this.anims.create({ key: 'cubeAnims', frames: this.anims.generateFrameNames('cube'), repeat: -1 });
+        const sprite = this.make.sprite("cube", true).play("cubeAnims");
+        this.spineBoy = this.add.spine(400, 600, "spineboy", "idle", true);
         const slot = this.spineBoy.findSlot("gun");
         // slot.setAttachment();
         let att = slot.attachment;
-		this.cursors = this.input.keyboard.createCursorKeys()
-        this.animationNames=[];
-		this.initializeAnimationsState(this.spineBoy);
+        this.cursors = this.input.keyboard.createCursorKeys()
+        this.animationNames = [];
+        this.initializeAnimationsState(this.spineBoy);
 
-        this.input.on("pointerdown",()=>{
+        this.input.on("pointerdown", () => {
             this.startAnim = this.animationNames[3];
-            this.spineBoy.play("run",true);
-        },this);
+            this.spineBoy.play("run", true);
+        }, this);
 
-        this.input.on("pointerup",()=>{
+        this.input.on("pointerup", () => {
             this.startAnim = this.animationNames[0];
-            this.spineBoy.play("idle",true);
-        },this);
+            this.spineBoy.play("idle", true);
+        }, this);
         // this.add.image(450,350,"test");
 
         setTimeout(() => {
@@ -50,28 +50,34 @@ export class TestScene extends Phaser.Scene {
         this.worker.onmessage = (m) => {
             const data = m.data;
             console.log('data from wasm: ' + data); //拿到 wasm 计算的结果
-            if(m === "test.png"){
+            if (m === "test.png") {
                 //this.textures.addImage("test.png",);
             }
         }
     }
 
-    initializeAnimationsState(spineGO){
-		const startAnim = spineGO.getCurrentAnimation().name
+    initializeAnimationsState(spineGO) {
+        const startAnim = spineGO.getCurrentAnimation().name
 
-		spineGO.getAnimationList().forEach((name, idx) => {
-			this.animationNames.push(name)
-			if (name === startAnim)
-			{
-				this.animationIndex = idx
-			}
-		})
-	}
+        spineGO.getAnimationList().forEach((name, idx) => {
+            this.animationNames.push(name)
+            if (name === startAnim) {
+                this.animationIndex = idx
+            }
+        })
+    }
 
-    changeAnimation(index)
-	{
-		const name = this.animationNames[index]
-		this.spineBoy.play(name, true)
-		this.animNameLabel.text = name
-	}
+    changeAnimation(index) {
+        const name = this.animationNames[index]
+        this.spineBoy.play(name, true)
+        this.animNameLabel.text = name
+    }
+
+    createRegionAttachmentByTexture(slot, texture) {
+        if (!slot) return;
+        const oldAtt = slot.attachment;
+        if (!oldAtt || !texture) return;
+        const newAtt = new Spine.RegionAttachment(oldAtt.name);
+
+    }
 }
