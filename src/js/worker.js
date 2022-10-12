@@ -9,11 +9,19 @@ onmessage = function (m) {
                 net.PBpacket.addProtocol(pixel[key]);
             }
             import("dexie").then(async (dexie) => {
-                const db = new dexie.Dexie("DataBase");
-                db.version(1).stores({ zips: "++id,url,name" });
-                await db.zips.add({ url: "key", name: "test" });
-                const obj = await db.zips.get({ url: "key", name: "test" });
-                console.log("obj:===>", obj);
+                const db = new dexie.Dexie("ziptest");
+                db.version(7).stores({ dbtest: "&url,name" });
+                await db.dbtest.add({ url: "key", name: "test" });
+                db.open().then(async () => {
+                    const obj = await db.dbtest.get({url:["key"]});
+                    const list = await db.dbtest
+                        .where({
+                            url: "key",
+                        })
+                        .toArray();
+
+                    console.log("obj:===>", db.dbtest);
+                });
             });
 
             import("../../pkg/wasm").then(module => {
